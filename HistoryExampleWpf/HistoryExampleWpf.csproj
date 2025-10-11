@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net9.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UseWPF>true</UseWPF>
+        <Authors>Frank Listing</Authors>
+        <Company>FL</Company>
+        <Description>An example application to show how to use the state machine with history states.</Description>
+        <PackageIcon>AppIcon.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\jasmsharp\jasmsharp.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Themes\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Resource Include="AppIcon.png">
+          <Pack>True</Pack>
+          <PackagePath></PackagePath>
+        </Resource>
+    </ItemGroup>
+
+</Project>
