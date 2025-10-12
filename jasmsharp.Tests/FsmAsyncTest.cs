@@ -49,25 +49,21 @@ public class FsmAsyncTest
                     .Transition<Event1>(state2)
                     .Entry<int>(i =>
                     {
-                        var before = Environment.TickCount;
+                        Console.WriteLine(i);
                         Thread.Sleep(100);
-                        Console.WriteLine($"Entry slept ({i}): {Environment.TickCount - before}");
                     }),
                 state2
                     .Transition<Event1>(state2)
                     .Entry<int>(i =>
                     {
-                        var before = Environment.TickCount;
+                        Console.WriteLine(i);
                         Thread.Sleep(100);
-                        Console.WriteLine($"Entry slept ({i}): {Environment.TickCount - before}");
                     })
                     .Transition<Event2>(new FinalState())
             );
 
         fsm.StateChanged += (sender, args) => Console.WriteLine(
-            $"FSM {(sender as Fsm)?.Name}  changed from {args.OldState.Name} to {args.NewState.Name}");
-        fsm.Triggered += (sender, args) => Console.WriteLine(
-            $"FSM {(sender as Fsm)?.Name} triggered {args.Event.Type.Name}, handled: {args.Handled}");
+            $"FSM {(sender as Fsm)?.Name}  changed from ${args.OldState.Name} to ${args.NewState.Name}");
 
         fsm.Start(42);
 
@@ -151,6 +147,50 @@ public class FsmAsyncTest
         Assert.AreEqual(state2, fsm.CurrentState);
 
         fsm.DebugInterface.TriggerSync(new Event2());
+        Assert.AreEqual(new FinalState(), fsm.CurrentState);
+    }
+
+    [TestMethod]
+    public void AsyncMachineEventsAreQueuedUntilStart()
+    {
+        var state1 = new State("first");
+        var state2 = new State("second");
+        var counter = 0;
+
+        var fsm =
+            FsmAsync.Of(
+                "myFsm",
+                state1
+                    .Transition<Event1>(state2),
+                state2
+                    .Entry(() => ++counter)
+                    .Transition<Event1>(state2)
+                    .Transition<Event2>(new FinalState())
+            );
+        fsm.Triggered += (sender, args) => Console.WriteLine(
+            $"FSM {(sender as Fsm)?.Name} triggered {args.Event.Type.Name}, handled: {args.Handled}");
+
+        fsm.Trigger(new Event1());
+        fsm.Trigger(new Event1());
+        fsm.Trigger(new Event1());
+        fsm.Trigger(new Event1());
+        Thread.Sleep(100);
+
+        Assert.AreEqual(0, counter);
+
+        fsm.Start();
+        Thread.Sleep(100);
+
+        Assert.AreEqual(4, counter);
+
+        fsm.Trigger(new Event1());
+        Thread.Sleep(10);
+
+        Assert.AreEqual(5, counter);
+
+        fsm.Trigger(new Event2());
+        Thread.Sleep(10);
+
         Assert.AreEqual(new FinalState(), fsm.CurrentState);
     }
 
