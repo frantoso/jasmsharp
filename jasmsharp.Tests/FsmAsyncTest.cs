@@ -49,23 +49,27 @@ public class FsmAsyncTest
                     .Transition<Event1>(state2)
                     .Entry<int>(i =>
                     {
-                        Console.WriteLine(i);
+                        Console.WriteLine($"Before ({i}): {Environment.TickCount}");
                         Thread.Sleep(100);
+                        Console.WriteLine($"After ({i}): {Environment.TickCount}");
                     }),
                 state2
                     .Transition<Event1>(state2)
                     .Entry<int>(i =>
                     {
-                        Console.WriteLine(i);
+                        Console.WriteLine($"Before ({i}): {Environment.TickCount}");
                         Thread.Sleep(100);
+                        Console.WriteLine($"After ({i}): {Environment.TickCount}");
                     })
                     .Transition<Event2>(new FinalState())
             );
 
         fsm.StateChanged += (sender, args) => Console.WriteLine(
-            $"FSM {(sender as Fsm)?.Name}  changed from ${args.OldState.Name} to ${args.NewState.Name}");
+            $"FSM {(sender as Fsm)?.Name}  changed from {args.OldState.Name} to {args.NewState.Name}");
+        fsm.Triggered+= (sender, args) => Console.WriteLine(
+            $"FSM {(sender as Fsm)?.Name} triggered {args.Event.Type.Name}, handled: {args.Handled}");
 
-        fsm.Start();
+        fsm.Start(42);
 
         var task1 = Task.Run(
             () => Measure.TimeMillis(() =>
@@ -75,7 +79,7 @@ public class FsmAsyncTest
                     Thread.Sleep(10);
                 }
 
-                Console.WriteLine("fsm task (${Thread.currentThread().threadId()}) has run.");
+                Console.WriteLine($"fsm task ({Environment.CurrentManagedThreadId}) has run.");
             }),
             this.TestContext.CancellationTokenSource.Token);
 
@@ -88,7 +92,7 @@ public class FsmAsyncTest
                     for (var i = 0; i <= 5; i++)
                     {
                         Console.WriteLine($"triggering {i}.");
-                        fsm.Trigger(evt);
+                        fsm.Trigger(evt, i);
                         Thread.Sleep(10);
                     }
                 });

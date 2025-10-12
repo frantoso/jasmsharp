@@ -413,7 +413,7 @@ public class FsmSyncTest
 
         private class TestData(int number)
         {
-            public int Number { get; set; }
+            public int Number { get; set; } = number;
         }
 
         private readonly FsmSync childMachine1 = FsmSync.Of(
