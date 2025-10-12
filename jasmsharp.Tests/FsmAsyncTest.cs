@@ -49,24 +49,24 @@ public class FsmAsyncTest
                     .Transition<Event1>(state2)
                     .Entry<int>(i =>
                     {
-                        Console.WriteLine($"Before ({i}): {Environment.TickCount}");
+                        var before = Environment.TickCount;
                         Thread.Sleep(100);
-                        Console.WriteLine($"After ({i}): {Environment.TickCount}");
+                        Console.WriteLine($"Entry slept ({i}): {Environment.TickCount - before}");
                     }),
                 state2
                     .Transition<Event1>(state2)
                     .Entry<int>(i =>
                     {
-                        Console.WriteLine($"Before ({i}): {Environment.TickCount}");
+                        var before = Environment.TickCount;
                         Thread.Sleep(100);
-                        Console.WriteLine($"After ({i}): {Environment.TickCount}");
+                        Console.WriteLine($"Entry slept ({i}): {Environment.TickCount - before}");
                     })
                     .Transition<Event2>(new FinalState())
             );
 
         fsm.StateChanged += (sender, args) => Console.WriteLine(
             $"FSM {(sender as Fsm)?.Name}  changed from {args.OldState.Name} to {args.NewState.Name}");
-        fsm.Triggered+= (sender, args) => Console.WriteLine(
+        fsm.Triggered += (sender, args) => Console.WriteLine(
             $"FSM {(sender as Fsm)?.Name} triggered {args.Event.Type.Name}, handled: {args.Handled}");
 
         fsm.Start(42);

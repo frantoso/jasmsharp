@@ -24,7 +24,9 @@ public class FsmAsync(
     /// Because the trigger method is synchronized, the mutex is not necessary for synchronization - it only blocks
     /// triggering events before calling fsm.start().
     /// </summary>
-    private readonly SemaphoreSlim semaphore = new(0, 1);
+    private readonly Semaphore semaphore = new(0, 1);
+
+    private readonly Queue<IEvent> eventQueue = new();
 
     /// <summary>
     /// Called when the FSM starts. Allows a derived class to execute additional startup code.
@@ -34,6 +36,8 @@ public class FsmAsync(
         this.semaphore.Release();
     }
 
+    private Task lastTask = Task.CompletedTask;
+
     /// <summary>
     /// Triggers a transition.
     /// </summary>
@@ -41,21 +45,74 @@ public class FsmAsync(
     /// <returns>Returns true.</returns>
     public override bool Trigger(IEvent @event)
     {
-        _ = Task.Run(async () =>
-        {
-            await this.semaphore.WaitAsync();
-            try
-            {
-                this.TriggerEvent(@event);
-            }
-            finally
-            {
-                this.semaphore.Release();
-            }
-        });
+        // lock (this)
+        // {
+        //     this.eventQueue.Enqueue(@event);
+        // }
+        //
+        // var before = Environment.TickCount;
+        // _ = Task.Run(this.ProcessTrigger);
+        // Console.WriteLine($"Enqueue took ({@event.Data}): {Environment.TickCount - before}");
 
+        var before = Environment.TickCount;
+        lock (this.eventQueue)
+        {
+            var taskBefore = this.lastTask;
+            this.lastTask = Task.Run(async () =>
+            {
+                await taskBefore;
+                Console.WriteLine($"Waiting trigger ({Environment.CurrentManagedThreadId}).");
+                this.semaphore.WaitOne();
+                Console.WriteLine($"Got trigger ({Environment.CurrentManagedThreadId}).");
+                try
+                {
+                    this.TriggerEvent(@event);
+                }
+                finally
+                {
+                    this.semaphore.Release();
+                    Console.WriteLine($"Released trigger ({Environment.CurrentManagedThreadId}).");
+                }
+            });
+        }
+
+        Console.WriteLine($"Enqueue took ({@event.Data}): {Environment.TickCount - before}");
         return true;
     }
+
+    /// <summary>
+    ///     Processes one particular event from the event queue if there is one.
+    /// </summary>
+    /// <remarks>
+    ///     After processing the event, this method will be queued at the dispatcher
+    ///     again for processing.
+    /// </remarks>
+    private void ProcessTrigger()
+    {
+        IEvent? @event;
+        lock (this)
+        {
+            if (this.IsBusy || this.eventQueue.Count == 0)
+            {
+                return;
+            }
+
+            this.IsBusy = true;
+            @event = this.eventQueue.Dequeue();
+        }
+
+        try
+        {
+            this.TriggerEvent(@event);
+        }
+        finally
+        {
+            this.IsBusy = false;
+            this.ProcessTrigger();
+        }
+    }
+
+    private bool IsBusy { get; set; }
 
     /// <summary>
     /// Triggers a transition.
