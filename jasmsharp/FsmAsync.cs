@@ -82,5 +82,5 @@ public class FsmAsync(
     /// <param name="otherStates">The other states of the FSM.</param>
     /// <returns>A new instance of FsmSync.</returns>
     public static FsmAsync Of(string name, EndStateContainer startState, params EndStateContainer[] otherStates)
-        => new(name, startState, otherStates.ToList());
+        => new(name, startState, [..otherStates]);
 }

@@ -43,7 +43,16 @@ public static class Extensions
     public static bool And(this bool b, Func<bool> condition) => b && condition();
 
     public static bool Or(this bool b, Func<bool> condition) => b || condition();
+
+    public static void ForEach<T>(this IEnumerable<T> source, System.Action<T> action)
+    {
+        foreach (var item in source)
+        {
+            action(item);
+        }
+    }
 }
+
 
 public static class Measure
 {

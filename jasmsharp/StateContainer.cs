@@ -311,7 +311,7 @@ public class StateContainer(
     public StateContainer Child(FsmSync stateMachine) =>
         new(
             state: this.State,
-            children: this.Children.Concat([stateMachine]).ToList(),
+            children: [.. this.Children, stateMachine],
             transitions: this.Transitions,
             onEntry: this.OnEntry,
             onExit: this.OnExit,
@@ -326,7 +326,7 @@ public class StateContainer(
     public StateContainer ChildList(IReadOnlyList<FsmSync> stateMachines) =>
         new(
             state: this.State,
-            children: this.Children.Concat(stateMachines).ToList(),
+            children: [.. this.Children, .. stateMachines],
             transitions: this.Transitions,
             onEntry: this.OnEntry,
             onExit: this.OnExit,
@@ -434,7 +434,7 @@ public class StateContainer(
         new(
             state: this.State,
             children: this.Children,
-            transitions: this.Transitions.Concat([new Transition<TEvent>(stateTo, guard)]).ToList(),
+            transitions: [.. this.Transitions, new Transition<TEvent>(stateTo, guard)],
             onEntry: this.OnEntry,
             onExit: this.OnExit,
             onDoInState: this.OnDoInState
@@ -450,7 +450,7 @@ public class StateContainer(
         new(
             state: this.State,
             children: this.Children,
-            transitions: this.Transitions.Concat([new Transition<NoEvent>(stateTo, guard)]).ToList(),
+            transitions: [.. this.Transitions, new Transition<NoEvent>(stateTo, guard)],
             onEntry: this.OnEntry,
             onExit: this.OnExit,
             onDoInState: this.OnDoInState
@@ -484,8 +484,7 @@ public class StateContainer(
         new(
             state: this.State,
             children: this.Children,
-            transitions: this.Transitions.Concat([new Transition<TEvent, TData>(stateTo, guard)])
-                .ToList(),
+            transitions: [.. this.Transitions, new Transition<TEvent, TData>(stateTo, guard)],
             onEntry: this.OnEntry,
             onExit: this.OnExit,
             onDoInState: this.OnDoInState
@@ -502,8 +501,7 @@ public class StateContainer(
         new(
             state: this.State,
             children: this.Children,
-            transitions: this.Transitions.Concat([new Transition<NoEvent, TData>(stateTo, guard)])
-                .ToList(),
+            transitions: [.. this.Transitions, new Transition<NoEvent, TData>(stateTo, guard)],
             onEntry: this.OnEntry,
             onExit: this.OnExit,
             onDoInState: this.OnDoInState
@@ -530,7 +528,7 @@ public class StateContainer(
         new(
             state: this.State,
             children: this.Children,
-            transitions: this.Transitions.Concat([new Transition<TEvent>(endPoint, guard)]).ToList(),
+            transitions: [.. this.Transitions, new Transition<TEvent>(endPoint, guard)],
             onEntry: this.OnEntry,
             onExit: this.OnExit,
             onDoInState: this.OnDoInState
@@ -549,8 +547,7 @@ public class StateContainer(
         new(
             state: this.State,
             children: this.Children,
-            transitions: this.Transitions.Concat([new Transition<TEvent, TData>(endPoint, guard)])
-                .ToList(),
+            transitions: [.. this.Transitions, new Transition<TEvent, TData>(endPoint, guard)],
             onEntry: this.OnEntry,
             onExit: this.OnExit,
             onDoInState: this.OnDoInState
@@ -585,7 +582,7 @@ public class StateContainer(
         new(
             state: this.State,
             children: this.Children,
-            transitions: this.Transitions.Concat([new Transition<NoEvent>(endPoint, guard)]).ToList(),
+            transitions: [.. this.Transitions, new Transition<NoEvent>(endPoint, guard)],
             onEntry: this.OnEntry,
             onExit: this.OnExit,
             onDoInState: this.OnDoInState
@@ -602,8 +599,7 @@ public class StateContainer(
         new(
             state: this.State,
             children: this.Children,
-            transitions: this.Transitions.Concat([new Transition<NoEvent, TData>(endPoint, guard)])
-                .ToList(),
+            transitions: [.. this.Transitions, new Transition<NoEvent, TData>(endPoint, guard)],
             onEntry: this.OnEntry,
             onExit: this.OnExit,
             onDoInState: this.OnDoInState
@@ -627,8 +623,7 @@ public class StateContainer(
         new(
             state: this.State,
             children: this.Children,
-            transitions: this.Transitions
-                .Concat([new Transition<TEvent>(new FinalState(), guard)]).ToList(),
+            transitions: [.. this.Transitions, new Transition<TEvent>(new FinalState(), guard)],
             onEntry: this.OnEntry,
             onExit: this.OnExit,
             onDoInState: this.OnDoInState
@@ -653,8 +648,7 @@ public class StateContainer(
         new(
             state: this.State,
             children: this.Children,
-            transitions: this.Transitions
-                .Concat([new Transition<TEvent, TData>(new FinalState(), guard)]).ToList(),
+            transitions: [.. this.Transitions, new Transition<TEvent, TData>(new FinalState(), guard)],
             onEntry: this.OnEntry,
             onExit: this.OnExit,
             onDoInState: this.OnDoInState

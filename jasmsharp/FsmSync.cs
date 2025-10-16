@@ -45,5 +45,5 @@ public class FsmSync(
         string name,
         EndStateContainer startState,
         params EndStateContainer[] otherStates)
-        => new(name, startState, otherStates.ToList());
+        => new(name, startState, [.. otherStates]);
 }
