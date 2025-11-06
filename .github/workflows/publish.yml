@@ -8,12 +8,6 @@ jobs:
   publish:
 
     runs-on: ubuntu-latest
-    # permissions:
-    #   contents: read
-    #   packages: write
-
-
-
 
     steps:
       - name: Checkout code
@@ -36,10 +30,10 @@ jobs:
         run: dotnet restore
  
       - name: Build the project
-        run: dotnet build --configuration Release --no-restore /p:Version=${{ steps.version_by_tag.outputs.version }}
+        run: dotnet build ./jasmsharp/jasmsharp.csproj --configuration Release --no-restore /p:Version=${{ steps.version_by_tag.outputs.version }}
  
       - name: Pack the NuGet package
-        run: dotnet pack --configuration Release --no-build --output ./nupkg /p:Version=${{ steps.version_by_tag.outputs.version }}
+        run: dotnet pack ./jasmsharp/jasmsharp.csproj --configuration Release --no-build --output ./nupkg /p:Version=${{ steps.version_by_tag.outputs.version }}
  
       - name: Publish NuGet package
         run: dotnet nuget push ./nupkg/jasmsharp.${{ steps.version_by_tag.outputs.version }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
