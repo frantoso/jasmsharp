@@ -41,7 +41,7 @@ The example shows the modelling of a single traffic light.
 
 ### Start with the model of the state machine
 
-![Simple state machine](images/traffic_light_simple.svg)
+![Simple state machine](https://raw.githubusercontent.com/frantoso/jasmsharp/refs/heads/main/images/traffic_light_simple.svg)
 
 *A simple traffic light with four states, starting with showing the red light.*
 
@@ -284,7 +284,7 @@ A composite state can be build from the scratch or encapsulated in a class deriv
 
 ### The diagram of the nested state machine
 
-![Simple state machine](images/traffic_light_nested.svg)
+![Nested state machine](https://raw.githubusercontent.com/frantoso/jasmsharp/refs/heads/main/images/traffic_light_nested.svg)
 
 *A traffic light with normal operation over the day and flashing yellow in the night.*
 
