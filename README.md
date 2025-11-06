@@ -30,9 +30,7 @@ Using this state machine is very simple. Just define the states, the transitions
 
 ### Nuget
 
-The library jasm is distributed via Nuget.
-
-Coming soon.
+The library jasm is distributed via Nuget. Just look for "jasmsharp" in the Nuget package manager.
 
 ## How to: Create a simple State Machine
 
