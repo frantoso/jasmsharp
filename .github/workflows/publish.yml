@@ -1,0 +1,47 @@
+name: NuGet Package
+
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  publish:
+
+    runs-on: ubuntu-latest
+    # permissions:
+    #   contents: read
+    #   packages: write
+
+
+
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+ 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.x' # Specify the .NET version you need
+
+      - name: Get version and version code
+        uses: jannemattila/get-version-from-tag@v4
+        id: version_by_tag
+
+      - name: Some other action
+        run: |
+          echo "Semver: ${{ steps.version_by_tag.outputs.version }}"
+
+      - name: Restore dependencies
+        run: dotnet restore
+ 
+      - name: Build the project
+        run: dotnet build --configuration Release --no-restore /p:Version=${{ steps.version_by_tag.outputs.version }}
+ 
+      - name: Pack the NuGet package
+        run: dotnet pack --configuration Release --no-build --output ./nupkg /p:Version=${{ steps.version_by_tag.outputs.version }}
+ 
+      - name: Publish NuGet package
+        run: dotnet nuget push ./nupkg/jasmsharp.${{ steps.version_by_tag.outputs.version }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }} 
