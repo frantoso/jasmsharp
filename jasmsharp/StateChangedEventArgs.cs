@@ -13,9 +13,9 @@ namespace jasmsharp;
 /// <param name="newState">The state after the state change (the current state).</param>
 public class StateChangedEventArgs(IState oldState, IState newState) : EventArgs
 {
-    /// <summary> Gets the state before the state change. </summary>
+    /// <summary>Gets the state before the state change.</summary>
     public IState OldState { get; } = oldState;
 
-    /// <summary> Gets the state after the state change (the current state). </summary>
+    /// <summary>Gets the state after the state change (the current state).</summary>
     public IState NewState { get; } = newState;
 }

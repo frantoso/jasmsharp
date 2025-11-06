@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="StateContainer.cs">
-//     Created by Frank Listing at 2025/10/01.
+//     Created by Frank Listing at 2025/11/06.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -8,21 +8,51 @@ namespace jasmsharp;
 
 using System.Collections.Immutable;
 
+/// <summary>
+///     The interface every state container must implement.
+/// </summary>
+/// <typeparam name="TState">The type of the state.</typeparam>
 public interface IStateContainer<out TState> where TState : StateBase
 {
-    ///<summary>Gets the encapsulated state.</summary>
+    /// <summary>
+    ///     Gets the encapsulated state.
+    /// </summary>
     TState State { get; }
 
-    /// <summary> Gets a list of all child state machines. </summary>
+    /// <summary>
+    ///     Gets a list of all child state machines.
+    /// </summary>
     IReadOnlyList<FsmSync> Children { get; }
 
+    /// <summary>
+    ///     Gets the handler method for the states do in state action.
+    /// </summary>
     IAction OnDoInState { get; }
 
+    /// <summary>
+    ///     Calls the OnEntry handler of this state and starts all child FSMs if there are some.
+    /// </summary>
     void Start(IEvent @event, History history);
 
+    /// <summary>
+    ///     Triggers a transition.
+    /// </summary>
+    /// <param name="event">The event occurred.</param>
+    /// <returns>Returns the data needed to proceed with the new state.</returns>
     ChangeStateData Trigger(IEvent @event);
 }
 
+/// <summary>
+///     This class models the behavior of a state in a state machine. It encapsulates a state and stores all its
+///     transitions, children and action functions.
+/// </summary>
+/// <typeparam name="TState">The type of the state to encapsulate.</typeparam>
+/// <param name="state"> The state to encapsulate.</param>
+/// <param name="children">A list of all child state machines.</param>
+/// <param name="transitions">A list storing the transition information.</param>
+/// <param name="onEntry">The handler method for the state entry action.</param>
+/// <param name="onExit">The handler method for the state exit action.</param>
+/// <param name="onDoInState">The handler method for the states do in state action.</param>
 public class StateContainerBase<TState>(
     TState state,
     IReadOnlyList<FsmSync> children,
@@ -32,32 +62,55 @@ public class StateContainerBase<TState>(
     IAction onDoInState
 ) : IStateContainer<TState> where TState : StateBase
 {
+    /// <summary>
+    ///     The list of currently working child state machines.
+    /// </summary>
+    private ImmutableList<FsmSync> activeChildren = [];
+
+    /// <summary>
+    ///     Gets the encapsulated state.
+    /// </summary>
     public TState State { get; } = state;
+
+    /// <summary>
+    ///     Gets a list of all child state machines.
+    /// </summary>
     public IReadOnlyList<FsmSync> Children { get; } = children;
+
+    /// <summary>
+    ///     Gets a list storing the transition information.
+    /// </summary>
     public IReadOnlyList<ITransition> Transitions { get; } = transitions;
+
+    /// <summary>
+    ///     Gets the handler method for the state entry action.
+    /// </summary>
     public IAction OnEntry { get; } = onEntry;
+
+    /// <summary>
+    ///     Gets the handler method for the state exit action.
+    /// </summary>
     public IAction OnExit { get; } = onExit;
+
+    /// <summary>
+    ///     Gets the handler method for the states do in state action.
+    /// </summary>
     public IAction OnDoInState { get; } = onDoInState;
 
     /// <summary>
-    /// Gets the name of the enclosed state.
+    ///     Gets the name of the enclosed state.
     /// </summary>
     public string Name { get; } = state.Name;
 
     /// <summary>
-    /// Gets a value indicating whether this state has transitions.
+    ///     Gets a value indicating whether this state has transitions.
     /// </summary>
     public bool HasTransitions { get; } = transitions.Count > 0;
 
     /// <summary>
-    /// Gets a value indicating whether this state has child machines.
+    ///     Gets a value indicating whether this state has child machines.
     /// </summary>
     public bool HasChildren { get; } = children.Count > 0;
-
-    /// <summary>
-    /// The list of currently working child state machines.
-    /// </summary>
-    private ImmutableList<FsmSync> activeChildren = [];
 
     private ImmutableList<FsmSync> ActiveChildren
     {
@@ -78,24 +131,24 @@ public class StateContainerBase<TState>(
     }
 
     /// <summary>
-    /// Gets a value indicating whether this state has active child machines.
+    ///     Gets a value indicating whether this state has active child machines.
     /// </summary>
     private bool HasActiveChildren => !this.ActiveChildren.IsEmpty;
 
     /// <summary>
-    /// Calls the OnEntry handler of this state and starts all child FSMs if there are some.
+    ///     Calls the OnEntry handler of this state and starts all child FSMs if there are some.
     /// </summary>
     public void Start() => this.Start(new NoEvent(), History.None);
 
     /// <summary>
-    /// Calls the OnEntry handler of this state and starts all child FSMs if there are some.
+    ///     Calls the OnEntry handler of this state and starts all child FSMs if there are some.
     /// </summary>
     /// <typeparam name="T">The data type of the data to provide to the entry function.</typeparam>
     /// <param name="data">The data to provide to the entry function.</param>
     public void Start<T>(T data) => this.Start(new DataEvent<NoEvent, T>(data), History.None);
 
     /// <summary>
-    /// Calls the OnEntry handler of this state and starts all child FSMs if there are some.
+    ///     Calls the OnEntry handler of this state and starts all child FSMs if there are some.
     /// </summary>
     /// <param name="event">The event which initiated this start.</param>
     /// <param name="history">The kind of history to use.</param>
@@ -112,7 +165,36 @@ public class StateContainerBase<TState>(
     }
 
     /// <summary>
-    /// Let all direct child FSMs continue working. Calls Start() if there is no active child.
+    ///     Triggers a transition.
+    /// </summary>
+    /// <param name="event">The event occurred.</param>
+    /// <returns>Returns the data needed to proceed with the new state.</returns>
+    public ChangeStateData Trigger(IEvent @event)
+    {
+        var result = this.ProcessChildren(@event);
+
+        return result.Item1 ? new ChangeStateData(true) : this.ProcessTransitions(result.Item2);
+    }
+
+    /// <summary>Returns a string that represents the current object.</summary>
+    /// <returns>A string that represents the current object.</returns>
+    public override string ToString() => this.Name;
+
+    /// <summary>
+    ///     Starts all registered sub state-machines.
+    /// </summary>
+    /// <param name="event">The event occurred.</param>
+    internal void StartChildren(IEvent @event)
+    {
+        this.ActiveChildren = this.ActiveChildren.Clear();
+        foreach (var fsm in this.Children)
+        {
+            this.StartChild(fsm, @event);
+        }
+    }
+
+    /// <summary>
+    ///     Let all direct child FSMs continue working. Calls Start() if there is no active child.
     /// </summary>
     /// <param name="event">The event which initiated this start.</param>
     /// <returns>Returns a value indicating whether the start was successful.</returns>
@@ -132,38 +214,13 @@ public class StateContainerBase<TState>(
     }
 
     /// <summary>
-    /// Let all child FSMs continue working. Calls Start() if there is no active child.
+    ///     Let all child FSMs continue working. Calls Start() if there is no active child.
     /// </summary>
     /// <returns>Returns a value indicating whether the start was successful.</returns>
     private bool TryStartDeepHistory() => this.HasActiveChildren;
 
     /// <summary>
-    /// Triggers a transition.
-    /// </summary>
-    /// <param name="event">The event occurred.</param>
-    /// <returns>Returns the data needed to proceed with the new state.</returns>
-    public ChangeStateData Trigger(IEvent @event)
-    {
-        var result = this.ProcessChildren(@event);
-
-        return result.Item1 ? new ChangeStateData(true) : this.ProcessTransitions(result.Item2);
-    }
-
-    /// <summary>
-    /// Starts all registered sub state-machines.
-    /// </summary>
-    /// <param name="event">The event occurred.</param>
-    internal void StartChildren(IEvent @event)
-    {
-        this.ActiveChildren = this.ActiveChildren.Clear();
-        foreach (var fsm in this.Children)
-        {
-            this.StartChild(fsm, @event);
-        }
-    }
-
-    /// <summary>
-    /// Starts the specified child machine.
+    ///     Starts the specified child machine.
     /// </summary>
     /// <param name="child">The child machine to start.</param>
     /// <param name="event">The event occurred.</param>
@@ -183,7 +240,7 @@ public class StateContainerBase<TState>(
     }
 
     /// <summary>
-    /// Processes the transitions.
+    ///     Processes the transitions.
     /// </summary>
     /// <param name="event">The event occurred.</param>
     /// <returns>Returns the data needed to proceed with the new state.</returns>
@@ -198,12 +255,13 @@ public class StateContainerBase<TState>(
     }
 
     /// <summary>
-    /// Processes the child machines.
+    ///     Processes the child machines.
     /// </summary>
     /// <param name="event">The event occurred.</param>
     /// <returns>
-    /// Returns a tuple where Item1 is true if the event was handled; false otherwise. Normally the returned trigger is the original one.
-    /// Exception: If the last child machine went to the final state, Item1 is false and the returned trigger is NoEvent.
+    ///     Returns a tuple where Item1 is true if the event was handled; false otherwise. Normally the returned trigger is the
+    ///     original one.
+    ///     Exception: If the last child machine went to the final state, Item1 is false and the returned trigger is NoEvent.
     /// </returns>
     private Tuple<bool, IEvent> ProcessChildren(IEvent @event)
     {
@@ -219,7 +277,7 @@ public class StateContainerBase<TState>(
     }
 
     /// <summary>
-    /// Changes the state to the one stored in the transition object.
+    ///     Changes the state to the one stored in the transition object.
     /// </summary>
     /// <param name="event">The event occurred.</param>
     /// <param name="transition">The actual transition.</param>
@@ -234,7 +292,7 @@ public class StateContainerBase<TState>(
     }
 
     /// <summary>
-    /// Triggers the child machines.
+    ///     Triggers the child machines.
     /// </summary>
     /// <param name="event">The event occurred.</param>
     /// <returns>Returns true if the event was handled; false otherwise.</returns>
@@ -243,7 +301,7 @@ public class StateContainerBase<TState>(
         this.ActiveChildren.Select(fsm => this.TriggerChild(fsm, @event)).ToList().Any(handled => handled);
 
     /// <summary>
-    /// Triggers the specified child machine.
+    ///     Triggers the specified child machine.
     /// </summary>
     /// <param name="child">The child machine to trigger.</param>
     /// <param name="event">The event occurred.</param>
@@ -261,14 +319,10 @@ public class StateContainerBase<TState>(
 
         return handled;
     }
-
-    /// <summary>Returns a string that represents the current object.</summary>
-    /// <returns>A string that represents the current object.</returns>
-    public override string ToString() => this.Name;
 }
 
 /// <summary>
-/// The container for normal states.
+///     The container for normal states.
 /// </summary>
 /// <param name="state">The state to encapsulate.</param>
 /// <param name="children">Gets a list of all child state machines.</param>
@@ -286,7 +340,7 @@ public abstract class EndStateContainer(
 ) : StateContainerBase<EndStateBase>(state, children, transitions, onEntry, onExit, onDoInState);
 
 /// <summary>
-/// The container for normal states.
+///     The container for normal states.
 /// </summary>
 /// <param name="state">The state to encapsulate.</param>
 /// <param name="children">Gets a list of all child state machines.</param>
@@ -304,7 +358,7 @@ public class StateContainer(
 ) : EndStateContainer(state, children, transitions, onEntry, onExit, onDoInState)
 {
     /// <summary>
-    /// Adds a new child machine.
+    ///     Adds a new child machine.
     /// </summary>
     /// <param name="stateMachine">The child-machine to add.</param>
     /// <returns>Returns a new state container.</returns>
@@ -319,7 +373,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Adds new child machines.
+    ///     Adds new child machines.
     /// </summary>
     /// <param name="stateMachines">The children to add.</param>
     /// <returns>Returns a new state container.</returns>
@@ -334,7 +388,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Sets the handler method for the state entry action.
+    ///     Sets the handler method for the state entry action.
     /// </summary>
     /// <param name="action">The handler method for the state entry action.</param>
     /// <returns>Returns a new state container.</returns>
@@ -349,7 +403,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Sets the handler method for the state entry action.
+    ///     Sets the handler method for the state entry action.
     /// </summary>
     /// <typeparam name="T">The type of the action's parameter.</typeparam>
     /// <param name="action">The handler method for the state entry action.</param>
@@ -357,14 +411,14 @@ public class StateContainer(
     public StateContainer Entry<T>(System.Action<T?> action) => this.Entry(new Action<T>(action));
 
     /// <summary>
-    /// Sets the handler method for the state entry action.
+    ///     Sets the handler method for the state entry action.
     /// </summary>
     /// <param name="action">The handler method for the state entry action.</param>
     /// <returns>Returns a new state container.</returns>
     public StateContainer Entry(System.Action action) => this.Entry(new Action(action));
 
     /// <summary>
-    /// Sets the handler method for the state exit action.
+    ///     Sets the handler method for the state exit action.
     /// </summary>
     /// <param name="action">The handler method for the state exit action.</param>
     /// <returns>Returns a new state container.</returns>
@@ -379,7 +433,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Sets the handler method for the state exit action.
+    ///     Sets the handler method for the state exit action.
     /// </summary>
     /// <typeparam name="T">The type of the action's parameter.</typeparam>
     /// <param name="action">The handler method for the state exit action.</param>
@@ -387,14 +441,14 @@ public class StateContainer(
     public StateContainer Exit<T>(System.Action<T?> action) => this.Exit(new Action<T>(action));
 
     /// <summary>
-    /// Sets the handler method for the state exit action.
+    ///     Sets the handler method for the state exit action.
     /// </summary>
     /// <param name="action">The handler method for the state exit action.</param>
     /// <returns>Returns a new state container.</returns>
     public StateContainer Exit(System.Action action) => this.Exit(new Action(action));
 
     /// <summary>
-    /// Sets the handler method for the state's Do-In-State action.
+    ///     Sets the handler method for the state's Do-In-State action.
     /// </summary>
     /// <param name="action">The handler method for the Do-In-State action.</param>
     /// <returns>Returns a new state container.</returns>
@@ -409,7 +463,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Sets the handler method for the state's Do-In-State action.
+    ///     Sets the handler method for the state's Do-In-State action.
     /// </summary>
     /// <typeparam name="T">The type of the action's parameter.</typeparam>
     /// <param name="action">The handler method for the Do-In-State action.</param>
@@ -417,14 +471,14 @@ public class StateContainer(
     public StateContainer DoInState<T>(System.Action<T?> action) => this.DoInState(new Action<T>(action));
 
     /// <summary>
-    /// Sets the handler method for the state's Do-In-State action.
+    ///     Sets the handler method for the state's Do-In-State action.
     /// </summary>
     /// <param name="action">The handler method for the Do-In-State action.</param>
     /// <returns>Returns a new state container.</returns>
     public StateContainer DoInState(System.Action action) => this.DoInState(new Action(action));
 
     /// <summary>
-    /// Adds a new transition to the state.
+    ///     Adds a new transition to the state.
     /// </summary>
     /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
     /// <param name="stateTo">A reference to the end point of this transition.</param>
@@ -441,7 +495,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Adds a new transition without an event to a nested state. The event 'NoEvent' is automatically used.
+    ///     Adds a new transition without an event to a nested state. The event 'NoEvent' is automatically used.
     /// </summary>
     /// <param name="stateTo">A reference to the end point of this transition.</param>
     /// <param name="guard">Condition handler of this transition.</param>
@@ -457,14 +511,14 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Adds a new transition without an event to a nested state. The event 'NoEvent' is automatically used.
+    ///     Adds a new transition without an event to a nested state. The event 'NoEvent' is automatically used.
     /// </summary>
     /// <param name="stateTo">A reference to the end point of this transition.</param>
     /// <returns>Returns a new state container.</returns>
     public StateContainer Transition(IEndState stateTo) => this.Transition(stateTo, () => true);
 
     /// <summary>
-    /// Adds a new transition to the state.
+    ///     Adds a new transition to the state.
     /// </summary>
     /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
     /// <param name="stateTo">A reference to the end point of this transition.</param>
@@ -473,7 +527,7 @@ public class StateContainer(
         this.Transition<TEvent>(stateTo, () => true);
 
     /// <summary>
-    /// Adds a new transition to the state.
+    ///     Adds a new transition to the state.
     /// </summary>
     /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
     /// <typeparam name="TData">The type of the action's parameter.</typeparam>
@@ -491,7 +545,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Adds a new transition without an event to a nested state. The event 'NoEvent' is automatically used.
+    ///     Adds a new transition without an event to a nested state. The event 'NoEvent' is automatically used.
     /// </summary>
     /// <typeparam name="TData">The type of the action's parameter.</typeparam>
     /// <param name="stateTo">A reference to the end point of this transition.</param>
@@ -508,7 +562,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Adds a new transition to the state.
+    ///     Adds a new transition to the state.
     /// </summary>
     /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
     /// <typeparam name="TData">The type of the action's parameter.</typeparam>
@@ -518,7 +572,7 @@ public class StateContainer(
         this.Transition<TEvent, TData>(stateTo, _ => true);
 
     /// <summary>
-    /// Adds a new transition to the state.
+    ///     Adds a new transition to the state.
     /// </summary>
     /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
     /// <param name="endPoint">A reference to the end point of this transition.</param>
@@ -535,7 +589,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Adds a new transition to the state.
+    ///     Adds a new transition to the state.
     /// </summary>
     /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
     /// <typeparam name="TData">The type of the action's parameter.</typeparam>
@@ -554,7 +608,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Adds a new transition to the state.
+    ///     Adds a new transition to the state.
     /// </summary>
     /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
     /// <param name="endPoint">A reference to the end point of this transition.</param>
@@ -563,7 +617,7 @@ public class StateContainer(
         this.Transition<TEvent>(endPoint, () => true);
 
     /// <summary>
-    /// Adds a new transition to the state.
+    ///     Adds a new transition to the state.
     /// </summary>
     /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
     /// <typeparam name="TData">The type of the action's parameter.</typeparam>
@@ -573,7 +627,7 @@ public class StateContainer(
         this.Transition<TEvent, TData>(endPoint, _ => true);
 
     /// <summary>
-    /// Adds a new transition without an event to a nested state. The event 'NoEvent' is automatically used.
+    ///     Adds a new transition without an event to a nested state. The event 'NoEvent' is automatically used.
     /// </summary>
     /// <param name="endPoint">A reference to the end point of this transition.</param>
     /// <param name="guard">Condition handler of this transition.</param>
@@ -589,7 +643,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Adds a new transition without an event to a nested state. The event 'NoEvent' is automatically used.
+    ///     Adds a new transition without an event to a nested state. The event 'NoEvent' is automatically used.
     /// </summary>
     /// <typeparam name="TData">The type of the action's parameter.</typeparam>
     /// <param name="endPoint">A reference to the end point of this transition.</param>
@@ -606,7 +660,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Adds a new transition without an event to a nested state. The event 'NoEvent' is automatically used.
+    ///     Adds a new transition without an event to a nested state. The event 'NoEvent' is automatically used.
     /// </summary>
     /// <param name="endPoint">A reference to the end point of this transition.</param>
     /// <returns>Returns a new state container.</returns>
@@ -614,7 +668,7 @@ public class StateContainer(
         this.Transition(endPoint, () => true);
 
     /// <summary>
-    /// Adds a new transition to the final state.
+    ///     Adds a new transition to the final state.
     /// </summary>
     /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
     /// <param name="guard">Condition handler of this transition.</param>
@@ -630,7 +684,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Adds a new transition to the final state.
+    ///     Adds a new transition to the final state.
     /// </summary>
     /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
     /// <returns>Returns a new state container.</returns>
@@ -638,7 +692,7 @@ public class StateContainer(
         this.TransitionToFinal<TEvent>(() => true);
 
     /// <summary>
-    /// Adds a new transition to the final state.
+    ///     Adds a new transition to the final state.
     /// </summary>
     /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
     /// <typeparam name="TData">The type of the action's parameter.</typeparam>
@@ -655,7 +709,7 @@ public class StateContainer(
         );
 
     /// <summary>
-    /// Adds a new transition to the final state.
+    ///     Adds a new transition to the final state.
     /// </summary>
     /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
     /// <typeparam name="TData">The type of the action's parameter.</typeparam>
@@ -665,7 +719,7 @@ public class StateContainer(
 }
 
 /// <summary>
-/// This class represents a particular state of the state machine.
+///     This class represents a particular state of the state machine.
 /// </summary>
 /// <param name="transitions">Gets a list storing the transition information.</param>
 public class InitialStateContainer(
@@ -679,7 +733,7 @@ public class InitialStateContainer(
     new NoAction())
 {
     /// <summary>
-    /// Adds a single transition to the initial state.
+    ///     Adds a single transition to the initial state.
     /// </summary>
     /// <param name="stateTo">A reference to the end point of this transition.</param>
     /// <returns>Returns a new state container.</returns>
@@ -688,7 +742,7 @@ public class InitialStateContainer(
 }
 
 /// <summary>
-/// This class represents a particular state of the state machine.
+///     This class represents a particular state of the state machine.
 /// </summary>
 public class FinalStateContainer() :
     EndStateContainer(new FinalState(), [], [], new NoAction(), new NoAction(), new NoAction());

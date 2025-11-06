@@ -1,13 +1,13 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="Transition.cs">
-//     Created by Frank Listing at 2025/09/30.
+//     Created by Frank Listing at 2025/11/06.
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace jasmsharp;
 
 /// <summary>
-/// An interface defining all information needed to process a transition.
+///     An interface defining all information needed to process a transition.
 /// </summary>
 public interface ITransition
 {
@@ -25,7 +25,7 @@ public interface ITransition
 }
 
 /// <summary>
-/// A base class for all transitions.
+///     A base class for all transitions.
 /// </summary>
 /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
 /// <param name="endPoint">A reference to the end point of this transition.</param>
@@ -42,7 +42,7 @@ public abstract class TransitionBase<TEvent>(TransitionEndPoint endPoint) where 
 }
 
 /// <summary>
-/// A class holding all information about a transition.
+///     A class holding all information about a transition.
 /// </summary>
 /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
 /// <param name="endPoint">A reference to the end point of this transition.</param>
@@ -50,7 +50,7 @@ public abstract class TransitionBase<TEvent>(TransitionEndPoint endPoint) where 
 public sealed class Transition<TEvent>(TransitionEndPoint endPoint, Func<bool> guard)
     : TransitionBase<TEvent>(endPoint), ITransition where TEvent : IEvent
 {
-    /// <summary> Alternative initialization with state as an endpoint.</summary>
+    /// <summary>Alternative initialization with state as an endpoint.</summary>
     /// <param name="state">The destination state of this transition.</param>
     /// <param name="guard">Condition handler of this transition.</param>
     public Transition(IEndState state, Func<bool> guard)
@@ -68,7 +68,7 @@ public sealed class Transition<TEvent>(TransitionEndPoint endPoint, Func<bool> g
 }
 
 /// <summary>
-/// A class holding all information about a data transition.
+///     A class holding all information about a data transition.
 /// </summary>
 /// <typeparam name="TEvent">The event type that initiates this transition.</typeparam>
 /// <typeparam name="TData">The data type that must be carried by the event.</typeparam>
@@ -77,9 +77,9 @@ public sealed class Transition<TEvent>(TransitionEndPoint endPoint, Func<bool> g
 public sealed class Transition<TEvent, TData>(TransitionEndPoint endPoint, Func<TData?, bool> guard)
     : TransitionBase<TEvent>(endPoint), ITransition where TEvent : IEvent
 {
-    /// <summary>Initializes a new instance of the <see cref="Transition{TData}"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="Transition{TData}" /> class.</summary>
     /// <summary>
-    /// Alternative initialization with state as an end point.
+    ///     Alternative initialization with state as an end point.
     /// </summary>
     /// <param name="state">A reference to the destination state of this transition.</param>
     /// <param name="guard">Condition handler of this transition.</param>

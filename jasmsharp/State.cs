@@ -1,13 +1,13 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="State.cs">
-//     Created by Frank Listing at 2025/09/30.
+//     Created by Frank Listing at 2025/11/06.
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace jasmsharp;
 
 /// <summary>
-/// An interface to be implemented by all states.
+///     An interface to be implemented by all states.
 /// </summary>
 public interface IState
 {
@@ -19,12 +19,12 @@ public interface IState
 }
 
 /// <summary>
-/// An interface to mark a start state (stateFrom in a transition)
+///     An interface to mark a start state (stateFrom in a transition)
 /// </summary>
 public interface IStartState : IState;
 
 /// <summary>
-/// An interface to mark an end state (stateTo in a transition)
+///     An interface to mark an end state (stateTo in a transition)
 /// </summary>
 public interface IEndState : IState
 {
@@ -36,34 +36,34 @@ public interface IEndState : IState
 }
 
 /// <summary>
-/// Base class for all states of the state machine.
+///     Base class for all states of the state machine.
 /// </summary>
 public abstract class StateBase : IState
 {
-    /// <summary> Initializes a new instance of the <see cref="StateBase"/> class.</summary>
+    private static int instanceCounter;
+
+    /// <summary>Initializes a new instance of the <see cref="StateBase" /> class.</summary>
     /// <param name="name">The name of the state. If null or whitespace, the runtime type name is used.</param>
     protected StateBase(string? name)
     {
         this.Name = string.IsNullOrWhiteSpace(name) ? this.GetType().Name : name;
-        var current = System.Threading.Interlocked.Increment(ref StateBase.instanceCounter) - 1;
+        var current = Interlocked.Increment(ref StateBase.instanceCounter) - 1;
         this.Id = $"State_{current:0000}";
     }
 
-    /// <summary> Gets the name of this state.</summary>
+    /// <summary>Gets the name of this state.</summary>
     public string Name { get; }
 
-    /// <summary> Gets a unique identifier of this object.</summary>
+    /// <summary>Gets a unique identifier of this object.</summary>
     public string Id { get; }
 
-    /// <summary> Returns a string that represents the current object.</summary>
+    /// <summary>Returns a string that represents the current object.</summary>
     /// <returns>The state name.</returns>
     public override string ToString() => this.Name;
-
-    private static int instanceCounter;
 }
 
 /// <summary>
-/// A base class for all end-state implementations.
+///     A base class for all end-state implementations.
 /// </summary>
 public abstract class EndStateBase(string? name) : StateBase(name), IEndState
 {
@@ -78,12 +78,12 @@ public abstract class EndStateBase(string? name) : StateBase(name), IEndState
 }
 
 /// <summary>
-/// A class to model a normal state.
+///     A class to model a normal state.
 /// </summary>
 public class State(string name = "") : EndStateBase(name), IStartState;
 
 /// <summary>
-/// A class to model a composite state.
+///     A class to model a composite state.
 /// </summary>
 public abstract class CompositeState(string name = "") : State(name)
 {
@@ -92,23 +92,23 @@ public abstract class CompositeState(string name = "") : State(name)
 }
 
 /// <summary>
-/// A class to model the special state 'initial'.
+///     A class to model the special state 'initial'.
 /// </summary>
 public sealed class InitialState() : StateBase("Initial"), IStartState;
 
 /// <summary>
-/// A class to model the special state 'final'.
+///     A class to model the special state 'final'.
 /// </summary>
 public sealed class FinalState() : EndStateBase("Final")
 {
     /// <summary>
-    /// Returns a value indicating whether this instance is equal to the other.
-    /// Special handling for the final state class: The object itself is not relevant, only the type.
+    ///     Returns a value indicating whether this instance is equal to the other.
+    ///     Special handling for the final state class: The object itself is not relevant, only the type.
     /// </summary>
     public override bool Equals(object? other) => other != null && other.GetType() == this.GetType();
 
     /// <summary>
-    /// Returns a hash code value for the object.
+    ///     Returns a hash code value for the object.
     /// </summary>
     public override int GetHashCode() => this.GetType().GetHashCode();
 }
