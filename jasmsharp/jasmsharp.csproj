@@ -10,10 +10,21 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="asset\jasm.png" />
+    </ItemGroup>
+
+    <ItemGroup>
       <None Include="..\README.md">
         <Pack>True</Pack>
         <PackagePath>\</PackagePath>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="asset\jasm.png">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </Resource>
     </ItemGroup>
 
 </Project>
