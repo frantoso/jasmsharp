@@ -15,6 +15,7 @@
         <RepositoryType>git</RepositoryType>
         <PackageTags>state-machine;fsm</PackageTags>
         <PackageIcon>jasm.png</PackageIcon>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
