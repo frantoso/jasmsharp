@@ -7,6 +7,14 @@
         <Title>Just Another State Machine for .NET</Title>
         <Authors>frantoso</Authors>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Description>This is an easy-to-use state machine implementation for C#.</Description>
+        <Copyright>Copyright © frantoso 2025-$([System.DateTime]::Now.ToString(yyyy))</Copyright>
+        <PackageProjectUrl>https://github.com/frantoso/jasmsharp</PackageProjectUrl>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/frantoso/jasmsharp</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>state-machine;fsm</PackageTags>
+        <PackageIcon>jasm.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
