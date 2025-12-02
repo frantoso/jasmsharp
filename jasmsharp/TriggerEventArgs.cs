@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="TriggerEventArgs.cs">
-//     Created by Frank Listing at 2025/10/07.
+//     Created by Frank Listing at 2025/11/06.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -14,12 +14,12 @@ namespace jasmsharp;
 /// <param name="handled">A value indicating whether the event was handled (true) or not (false).</param>
 public class TriggerEventArgs(IState currentState, IEvent @event, bool handled) : EventArgs
 {
-    /// <summary> Gets the current state of the state machine. </summary>
+    /// <summary>Gets the current state of the state machine.</summary>
     public IState CurrentState { get; } = currentState;
 
-    /// <summary> Gets the event which was processed. </summary>
+    /// <summary>Gets the event which was processed.</summary>
     public IEvent Event { get; } = @event;
 
-    /// <summary> Gets a value indicating whether the event was handled (true) or not (false). </summary>
+    /// <summary>Gets a value indicating whether the event was handled (true) or not (false).</summary>
     public bool Handled { get; } = handled;
 }
