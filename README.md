@@ -278,7 +278,8 @@ The output produced by both calls to `runFsm()`:
 
 This library also supports nested state machines through composite states.
 
-A composite state can be build from the scratch or encapsulated in a class derived from `CompositeState`.
+A composite state can be build from the scratch or encapsulated in a class derived from `CompositeState`.  
+To see how composite states work together with the history states, look at this example: [How History States work](https://frantoso.github.io/jasmsharp/).
 
 ### The diagram of the nested state machine
 
