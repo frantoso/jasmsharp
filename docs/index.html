@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktive TypeScript-Webseite</title>
+  <script type="module" crossorigin src="/assets/index-jg81XDh6.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-BPOte-0M.css">
+</head>
+<body>
+<h1>How History States work</h1>
+
+<button id="start" style="min-width: 80px">Start</button>
+<button id="next" style="min-width: 80px">[N]ext</button>
+<button id="break" style="min-width: 80px">[B]reak</button>
+<button id="continue" style="min-width: 80px">[C]ontinue</button>
+<button id="deep" style="min-width: 80px">Continue [D]eep</button>
+<button id="return" style="min-width: 80px">[R]eturn</button>
+
+<p id="output"></p>
+
+<svg id="svg1" width="200mm" height="150mm" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+    <defs id="defs1">
+        <marker id="ArrowWideRounded" style="overflow:visible" markerHeight="1" markerWidth="2"
+                orient="auto-start-reverse" preserveAspectRatio="none" refX="1" viewBox="0 0 1 1">
+            <path id="path2" transform="rotate(180 .125 0)" d="m3-3-3 3 3 3"
+                  style="fill:none;stroke-linecap:round;stroke:context-stroke"/>
+        </marker>
+        <marker id="ArrowWideRounded-0" style="overflow:visible" markerHeight="1" markerWidth="2"
+                orient="auto-start-reverse" preserveAspectRatio="none" refX="1" viewBox="0 0 1 1">
+            <path id="path2-0" transform="rotate(180 .125 0)" d="m3-3-3 3 3 3"
+                  style="fill:none;stroke-linecap:round;stroke:context-stroke"/>
+        </marker>
+        <marker id="ArrowWideRounded-0-1" style="overflow:visible" markerHeight="1" markerWidth="2"
+                orient="auto-start-reverse" preserveAspectRatio="none" refX="1" viewBox="0 0 1 1">
+            <path id="path2-0-7" transform="rotate(180 .125 0)" d="m3-3-3 3 3 3"
+                  style="fill:none;stroke-linecap:round;stroke:context-stroke"/>
+        </marker>
+        <marker id="ArrowWideRounded-0-5" style="overflow:visible" markerHeight="1" markerWidth="2"
+                orient="auto-start-reverse" preserveAspectRatio="none" refX="1" viewBox="0 0 1 1">
+            <path id="path2-0-9" transform="rotate(180 .125 0)" d="m3-3-3 3 3 3"
+                  style="fill:none;stroke-linecap:round;stroke:context-stroke"/>
+        </marker>
+        <marker id="ArrowWideRounded-0-6" style="overflow:visible" markerHeight="1" markerWidth="2"
+                orient="auto-start-reverse" preserveAspectRatio="none" refX="1" viewBox="0 0 1 1">
+            <path id="path2-0-6" transform="rotate(180 .125 0)" d="m3-3-3 3 3 3"
+                  style="fill:none;stroke-linecap:round;stroke:context-stroke"/>
+        </marker>
+        <marker id="ArrowWideRounded-0-2" style="overflow:visible" markerHeight="1" markerWidth="2"
+                orient="auto-start-reverse" preserveAspectRatio="none" refX="1" viewBox="0 0 1 1">
+            <path id="path2-0-5" transform="rotate(180 .125 0)" d="m3-3-3 3 3 3"
+                  style="fill:none;stroke-linecap:round;stroke:context-stroke"/>
+        </marker>
+        <marker id="ArrowWideRounded-0-3" style="overflow:visible" markerHeight="1" markerWidth="2"
+                orient="auto-start-reverse" preserveAspectRatio="none" refX="1" viewBox="0 0 1 1">
+            <path id="path2-0-51" transform="rotate(180 .125 0)" d="m3-3-3 3 3 3"
+                  style="fill:none;stroke-linecap:round;stroke:context-stroke"/>
+        </marker>
+        <marker id="ArrowWideRounded-0-9" style="overflow:visible" markerHeight="1" markerWidth="2"
+                orient="auto-start-reverse" preserveAspectRatio="none" refX="1" viewBox="0 0 1 1">
+            <path id="path2-0-96" transform="rotate(180 .125 0)" d="m3-3-3 3 3 3"
+                  style="fill:none;stroke-linecap:round;stroke:context-stroke"/>
+        </marker>
+        <marker id="ArrowWideRounded-0-1-8" style="overflow:visible" markerHeight="1" markerWidth="2"
+                orient="auto-start-reverse" preserveAspectRatio="none" refX="1" viewBox="0 0 1 1">
+            <path id="path2-0-7-3" transform="rotate(180 .125 0)" d="m3-3-3 3 3 3"
+                  style="fill:none;stroke-linecap:round;stroke:context-stroke"/>
+        </marker>
+        <marker id="ArrowWideRounded-0-5-4" style="overflow:visible" markerHeight="1" markerWidth="2"
+                orient="auto-start-reverse" preserveAspectRatio="none" refX="1" viewBox="0 0 1 1">
+            <path id="path2-0-9-8" transform="rotate(180 .125 0)" d="m3-3-3 3 3 3"
+                  style="fill:none;stroke-linecap:round;stroke:context-stroke"/>
+        </marker>
+        <marker id="ArrowWideRounded-0-6-4" style="overflow:visible" markerHeight="1" markerWidth="2"
+                orient="auto-start-reverse" preserveAspectRatio="none" refX="1" viewBox="0 0 1 1">
+            <path id="path2-0-6-9" transform="rotate(180 .125 0)" d="m3-3-3 3 3 3"
+                  style="fill:none;stroke-linecap:round;stroke:context-stroke"/>
+        </marker>
+    </defs>
+    <g id="layer1" transform="translate(-13.124 -12.711)">
+        <g id="m-machine" transform="translate(8.1638 -6.2881)">
+            <path id="path1" d="m40.455 61.612 0.04713-16.413"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path3" d="m24.687 40.855c-10.382-0.05168-10.025 24.782 0 25"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path4" d="m28.598 47.244-0.04346 14.169"
+                  style="fill:none;marker-start:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path5" d="m35.77 47.113v14.473"
+                  style="fill:none;marker-start:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path8" d="m64.238 41.289-19.645-0.086925"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path9" d="m44.506 42.593 20.08 18.776"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path10" d="m44.679 65.194h19.471"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path11" d="m74.408 60.674 0.17385-15.386"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <g id="m-initial">
+                <circle id="m-initial-rect" cx="53.698" cy="29.867" r="2"
+                        style="stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+            </g>
+            <g id="m-final" transform="translate(15.059 54.643)">
+                <circle id="path13" cx="38.812" cy="21.905" r="2"
+                        style="fill:#fff;stroke-linecap:round;stroke-width:.25;stroke:#000"/>
+                <circle id="m-final-rect" cx="38.786" cy="21.885" r="1.3"
+                        style="stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+            </g>
+            <path id="path15" d="m55.442 30.671 9.4042 7.3144"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path16" d="m44.009 68.841 8.1134 6.5153"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <g id="m-initializing">
+                <rect id="m-initializing-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17" x="68.16494" y="41.857822"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17" x="68.16494" y="41.857822" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">Initializing</tspan></text>
+            </g>
+            <g id="m-finalizing">
+                <rect id="m-finalizing-rect" x="64.224" y="60.88" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text18" x="68.287872" y="65.644867"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan18" x="68.287872" y="65.644867" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">Finalizing</tspan></text>
+            </g>
+            <g id="m-handling-error">
+                <rect id="m-handling-error-rect" x="24.748" y="61.572" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text19" x="25.508072" y="66.628311"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan19" x="25.508072" y="66.628311" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">Handling Error</tspan></text>
+            </g>
+            <text id="text22" x="14.107684" y="54.150875"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22" x="14.107684" y="54.150875" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">B</tspan></text>
+            <text id="text22-1" x="48.748062" y="72.013046"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-4" x="48.748062" y="72.013046" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">B</tspan></text>
+            <text id="text22-16" x="53.473118" y="40.308823"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8" x="53.473118" y="40.308823" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <text id="text22-16-8" x="52.763161" y="64.512535"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-6" x="52.763161" y="64.512535" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <text id="text22-16-6" x="71.889442" y="54.022297"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0" x="71.889442" y="54.022297" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <text id="text22-8" transform="translate(17.847 18.457)" x="8.4207363" y="36.448887"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-9" x="8.4207363" y="36.448887" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">C</tspan></text>
+            <text id="text22-4" x="33.49604" y="54.721722"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-1" x="33.49604" y="54.721722" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">D</tspan></text>
+            <text id="text22-42" transform="translate(29.643 18.241)" x="8.4207363" y="36.448887"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-7" x="8.4207363" y="36.448887" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">R</tspan></text>
+            <g id="m-working">
+                <g id="m-working-base">
+                    <rect id="m-working-rect" x="24.633" y="37.172" width="20" height="8" rx="2" ry="2"
+                          style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                    <text id="text16" x="29.318916" y="41.919289"
+                          style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                          xml:space="preserve"><tspan id="tspan16" x="29.318916" y="41.919289" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">Working</tspan></text>
+                </g>
+                <g id="m-working-composite" transform="translate(16.342 22.514)" style="fill:#faebd7">
+                    <circle id="path22" cx="23.234" cy="21.421" r=".5"
+                            style="fill:#faebd7;stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+                    <circle id="path22-5" cx="25.826" cy="21.416" r=".5"
+                            style="fill:#faebd7;stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+                    <path id="path23" d="m23.72 21.378 1.6244-0.0054"
+                          style="fill-rule:evenodd;fill:#faebd7;stroke-width:.15;stroke:#000"/>
+                </g>
+                <g id="m-working-deep-history">
+                    <circle id="path7" cx="35.878" cy="45.223" r="2"
+                            style="fill:#fff;stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+                    <text id="text8" x="34.777603" y="46.24408"
+                          style="font-family:Arial,sans-serif;font-size:3px;font-stretch:condensed;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                          xml:space="preserve"><tspan id="tspan8" x="34.777603" y="46.24408" style="font-family:Arial,sans-serif;font-size:3px;font-stretch:condensed;stroke-width:.26458">H*</tspan></text>
+                </g>
+                <g id="m-working-history">
+                    <circle id="path6" cx="28.62" cy="45.244" r="2"
+                            style="fill:#fff;stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+                    <text id="text7" x="27.555214" y="46.24408"
+                          style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                          xml:space="preserve"><tspan id="tspan7" x="27.555214" y="46.24408" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">H</tspan></text>
+                </g>
+            </g>
+        </g>
+        <g id="l2-machine" transform="translate(19.276 -9.2589)">
+            <g id="l2-initial">
+                <circle id="l2-initial-rect" cx="20.12" cy="98.183" r="2"
+                        style="stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+            </g>
+            <text id="text22-16-6-8" x="60.242313" y="97.137917"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6" x="60.242313" y="97.137917" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <g id="l2-final" transform="translate(94.202 76.337)">
+                <circle id="path13-7" cx="38.812" cy="21.905" r="2"
+                        style="fill:#fff;stroke-linecap:round;stroke-width:.25;stroke:#000"/>
+                <circle id="l2-final-rect" cx="38.786" cy="21.885" r="1.3"
+                        style="stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+            </g>
+            <g id="l2-initializing" transform="translate(-29.19 56.987)">
+                <rect id="l2-initializing-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8" x="65.8" y="42"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2" x="65.8" y="42" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L2-Initializing</tspan></text>
+            </g>
+            <g id="l2-working" transform="translate(77.002 57.275)">
+                <g id="l2-working-base">
+                    <rect id="l2-working-rect" x="24.633" y="37.172" width="20" height="8" rx="2" ry="2"
+                          style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                    <text id="text16-5" x="27" y="41.919289"
+                          style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                          xml:space="preserve"><tspan id="tspan16-2" x="27" y="41.919289" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L2-Working</tspan></text>
+                </g>
+                <g id="l2-working-composite" transform="translate(16.342 22.514)" style="fill:#faebd7">
+                    <circle id="path22-6" cx="23.234" cy="21.421" r=".5"
+                            style="fill:#faebd7;stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+                    <circle id="path22-5-1" cx="25.826" cy="21.416" r=".5"
+                            style="fill:#faebd7;stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+                    <path id="path23-4" d="m23.72 21.378 1.6244-0.0054"
+                          style="fill-rule:evenodd;fill:#faebd7;stroke-width:.15;stroke:#000"/>
+                </g>
+            </g>
+            <g id="l2-preparing" transform="translate(43.661 57.242)">
+                <g id="l2-preparing-base">
+                    <rect id="l2-preparing-rect" x="24.633" y="37.172" width="20" height="8" rx="2" ry="2"
+                          style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                    <text id="text16-5-9" x="26" y="41.919289"
+                          style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                          xml:space="preserve"><tspan id="tspan16-2-5" x="26" y="41.919289" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L2-Preparing</tspan></text>
+                </g>
+                <g id="l2-preparing-composite" transform="translate(16.342 22.514)" style="fill:#faebd7">
+                    <circle id="path22-6-3" cx="23.234" cy="21.421" r=".5"
+                            style="fill:#faebd7;stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+                    <circle id="path22-5-1-1" cx="25.826" cy="21.416" r=".5"
+                            style="fill:#faebd7;stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+                    <path id="path23-4-2" d="m23.72 21.378 1.6244-0.0054"
+                          style="fill-rule:evenodd;fill:#faebd7;stroke-width:.15;stroke:#000"/>
+                </g>
+            </g>
+            <path id="path12" d="m22.166 98.412 12.952 0.07369"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path17" d="m55.238 98.359 13.086 0.04015"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path18" d="m88.403 98.573 13.213-2e-6"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path19" d="m121.69 98.225 9.2207 0.0534"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+        </g>
+        <g id="l3p-machine" transform="translate(6.1794 5.6182)">
+            <g id="l3p-initial" transform="translate(8.3084 9.736)">
+                <circle id="l3p-initial-rect" cx="20.12" cy="98.183" r="2"
+                        style="stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+            </g>
+            <g id="l3p-state1" transform="translate(-16.83 66.809)">
+                <rect id="l3p-state1-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8-6" x="65.5" y="42.38699"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2-1" x="65.5" y="42.38699" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L3p-State 1</tspan></text>
+            </g>
+            <g id="l3p-state2" transform="translate(-16.806 83.239)">
+                <rect id="l3p-state2-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8-6-7" x="65.5" y="42.38699"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2-1-9" x="65.5" y="42.38699" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L3p-State 2</tspan></text>
+            </g>
+            <g id="l3p-state3" transform="translate(-45.926 83.139)">
+                <rect id="l3p-state3-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8-6-3" x="65.5" y="42.38699"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2-1-4" x="65.5" y="42.38699" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L3p-State 3</tspan></text>
+            </g>
+            <g id="l3p-final" transform="translate(18.638 118.08)">
+                <circle id="path13-7-8" cx="38.812" cy="21.905" r="2"
+                        style="fill:#fff;stroke-linecap:round;stroke-width:.25;stroke:#000"/>
+                <circle id="l3p-final-rect" cx="38.786" cy="21.885" r="1.3"
+                        style="stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+            </g>
+            <g id="l3p-state4" transform="translate(-46.042 99.081)">
+                <rect id="l3p-state4-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8-6-2" x="65.5" y="42.38699"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2-1-7" x="65.5" y="42.38699" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L3p-State 4</tspan></text>
+            </g>
+            <text id="text22-16-6-8-7" x="55.374413" y="116.99244"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6-6" x="55.374413" y="116.99244" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <text id="text22-16-6-8-7-4" x="42.277542" y="123.47472"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6-6-2" x="42.277542" y="123.47472" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <text id="text22-16-6-8-7-7" x="25.873373" y="133.39661"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6-6-26" x="25.873373" y="133.39661" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <text id="text22-16-6-8-7-75" x="46.246288" y="139.21744"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6-6-4" x="46.246288" y="139.21744" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <path id="path14" d="m30.537 108.01 17.105 0.0439"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path20" d="m58.004 111.98v8.4832"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path21" d="m47.602 124.53-9.0289 0.033"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path24" d="m28.503 128.47-0.03307 7.8383"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+            <path id="path25" d="m38.375 140.11 16.966-0.0827"
+                  style="fill:none;marker-end:url(#ArrowWideRounded);stroke-width:.15;stroke:#000"/>
+        </g>
+        <g id="l3w-machine" transform="translate(9.3544 8.7932)">
+            <g id="l3w-state1" transform="translate(37.355 63.533)">
+                <rect id="l3w-state1-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8-8" x="65.5" y="42.38699"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2-5" x="65.5" y="42.38699" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L3w-State 1</tspan></text>
+            </g>
+            <g id="l3w-state3" transform="translate(8.5631 78.636)">
+                <rect id="l3w-state3-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8-8-0" x="65.5" y="42.38699"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2-5-0" x="65.5" y="42.38699" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L3w-State 3</tspan></text>
+            </g>
+            <g id="l3w-state2" transform="translate(37.353 78.627)">
+                <rect id="l3w-state2-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8-8-4" x="65.5" y="42.38699"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2-5-4" x="65.5" y="42.38699" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L3w-State 2</tspan></text>
+            </g>
+            <g id="l3w-state4" transform="translate(8.7359 93.447)">
+                <rect id="l3w-state4-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8-8-49" x="65.5" y="42.38699"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2-5-6" x="65.5" y="42.38699" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L3w-State 4</tspan></text>
+            </g>
+            <g id="l3w-state5" transform="translate(37.103 93.657)">
+                <rect id="l3w-state5-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8-8-3" x="65.5" y="42.38699"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2-5-5" x="65.5" y="42.38699" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L3w-State 5</tspan></text>
+            </g>
+            <g id="l3w-final" transform="translate(93.978 112.92)">
+                <circle id="path13-7-0" cx="38.812" cy="21.905" r="2"
+                        style="fill:#fff;stroke-linecap:round;stroke-width:.25;stroke:#000"/>
+                <circle id="l3w-final-rect" cx="38.786" cy="21.885" r="1.3"
+                        style="stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+            </g>
+            <g id="l3w-initial" transform="translate(62.529 6.6579)">
+                <circle id="l3w-initial-rect" cx="20.12" cy="98.183" r="2"
+                        style="stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+            </g>
+            <text id="text22-16-6-8-7-8" x="109.12045" y="113.43613"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6-6-9" x="109.12045" y="113.43613" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <text id="text22-16-6-8-7-8-3" x="96.813797" y="119.08641"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6-6-9-9" x="96.813797" y="119.08641" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <text id="text22-16-6-8-7-8-7" x="80.222542" y="128.26936"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6-6-9-7" x="80.222542" y="128.26936" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <text id="text22-16-6-8-7-8-71" x="95.723358" y="134.05811"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6-6-9-0" x="95.723358" y="134.05811" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <text id="text22-16-6-8-7-8-6" x="125.21784" y="133.99666"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6-6-9-5" x="125.21784" y="133.99666" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <path id="path14-6" d="m84.767 105 16.965 0.0907"
+                  style="fill:none;marker-end:url(#ArrowWideRounded-0);stroke-width:.15;stroke:#000"/>
+            <path id="path14-6-7" d="m111.9 108.84-0.0371 6.9428"
+                  style="fill:none;marker-end:url(#ArrowWideRounded-0-1);stroke-width:.15;stroke:#000"/>
+            <path id="path14-6-1" d="m101.76 120.11-8.7601 0.0205"
+                  style="fill:none;marker-end:url(#ArrowWideRounded-0-5);stroke-width:.15;stroke:#000"/>
+            <path id="path14-6-8" d="m83.122 123.94-0.03714 6.8048"
+                  style="fill:none;marker-end:url(#ArrowWideRounded-0-6);stroke-width:.15;stroke:#000"/>
+            <path id="path14-6-4" d="m93.193 135.07 8.3117-0.0263"
+                  style="fill:none;marker-end:url(#ArrowWideRounded-0-2);stroke-width:.15;stroke:#000"/>
+            <path id="path14-6-16" d="m121.52 134.94 9.2238-0.0263"
+                  style="fill:none;marker-end:url(#ArrowWideRounded-0-3);stroke-width:.15;stroke:#000"/>
+        </g>
+        <g id="l3wa-machine" transform="translate(71.068 -.28016)">
+            <g id="l3wa-state1" transform="translate(46.709 72.326)">
+                <rect id="l3wa-state1-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8-8-38" x="65.5" y="42.38699"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2-5-08" x="65.5" y="42.38699" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L3wa-State 1</tspan></text>
+            </g>
+            <g id="l3wa-state3" transform="translate(17.918 87.429)">
+                <rect id="l3wa-state3-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8-8-0-6" x="65.5" y="42.38699"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2-5-0-8" x="65.5" y="42.38699" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L3wa-State 3</tspan></text>
+            </g>
+            <g id="l3wa-state2" transform="translate(46.707 87.42)">
+                <rect id="l3wa-state2-rect" x="64.425" y="37.291" width="20" height="8" rx="2" ry="2"
+                      style="fill:#faebd7;stroke-linecap:round;stroke-width:.2;stroke:#000"/>
+                <text id="text17-8-8-4-8" x="65.5" y="42.38699"
+                      style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                      xml:space="preserve"><tspan id="tspan17-2-5-4-9" x="65.565.5" y="42.38699" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">L3wa-State 2</tspan></text>
+            </g>
+            <g id="l3wa-final" transform="translate(53.581 119.72)">
+                <circle id="path13-7-0-8" cx="38.812" cy="21.905" r="2"
+                        style="fill:#fff;stroke-linecap:round;stroke-width:.25;stroke:#000"/>
+                <circle id="l3wa-final-rect" cx="38.786" cy="21.885" r="1.3"
+                        style="stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+            </g>
+            <g id="l3wa-initial" transform="translate(71.883 15.451)">
+                <circle id="l3wa-initial-rect" cx="20.12" cy="98.183" r="2"
+                        style="stroke-linecap:round;stroke-width:.15;stroke:#000"/>
+            </g>
+            <text id="text22-16-6-8-7-8-61" x="118.47488" y="122.22929"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6-6-9-2" x="118.47488" y="122.22929" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <text id="text22-16-6-8-7-8-3-4" x="106.16823" y="127.87958"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6-6-9-9-2" x="106.16823" y="127.87958" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <text id="text22-16-6-8-7-8-7-5" x="89.576973" y="137.06253"
+                  style="font-family:Arial,sans-serif;font-size:3px;letter-spacing:0;line-height:1.25;stroke-width:.26458;word-spacing:0"
+                  xml:space="preserve"><tspan id="tspan22-8-0-6-6-9-7-8" x="89.576973" y="137.06253" style="font-family:Arial,sans-serif;font-size:3px;stroke-width:.26458">N</tspan></text>
+            <path id="path14-6-3" d="m94.122 113.79 16.965 0.0907"
+                  style="fill:none;marker-end:url(#ArrowWideRounded-0-9);stroke-width:.15;stroke:#000"/>
+            <path id="path14-6-7-9" d="m121.25 117.64-0.0371 6.9428"
+                  style="fill:none;marker-end:url(#ArrowWideRounded-0-1-8);stroke-width:.15;stroke:#000"/>
+            <path id="path14-6-1-2" d="m111.12 128.9-8.7601 0.0205"
+                  style="fill:none;marker-end:url(#ArrowWideRounded-0-5-4);stroke-width:.15;stroke:#000"/>
+            <path id="path14-6-8-4" d="m92.477 132.73-0.03714 6.8048"
+                  style="fill:none;marker-end:url(#ArrowWideRounded-0-6-4);stroke-width:.15;stroke:#000"/>
+        </g>
+    </g>
+</svg>
+
+<!-- Eingebundenes JavaScript (kompiliert aus TypeScript) -->
+
+</body>
+</html>
