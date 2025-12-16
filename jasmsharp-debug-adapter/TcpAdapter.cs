@@ -8,6 +8,17 @@ public class TcpAdapter : IDisposable
 {
     private readonly TcpClient client = new();
 
+    private static readonly Lazy<TcpAdapter> LazyInstance = new(() => new TcpAdapter());
+
+    private TcpAdapter()
+    {
+        _ = Task.Run(() => Connect("127.0.0.1", 4000));
+    }
+
+    public static TcpAdapter Instance => LazyInstance.Value;
+
+    public static Task Connect(string host, int port) => Instance.ConnectAsync(host, port);
+
     public async Task ConnectAsync(string host, int port)
     {
         while (true)
@@ -26,7 +37,7 @@ public class TcpAdapter : IDisposable
         }
     }
 
-    public async Task SendAsync(string message)
+    private async Task SendAsync(string message)
     {
         if (!this.client.Connected)
         {
@@ -38,10 +49,10 @@ public class TcpAdapter : IDisposable
         Console.WriteLine($"Sent: {message}");
     }
 
-    public Task SendAsync(string method, string data)
+    public static Task SendAsync(string method, string data)
     {
         var message = method.ToCommand(data).Serialize();
-        return this.SendAsync(message);
+        return Instance.SendAsync(message);
     }
 
     /// <summary>
@@ -76,9 +87,9 @@ public class TcpAdapter : IDisposable
 
     private Dictionary<string, Action<JsonElement>> CommandHandlers { get; } = new();
 
-    public void AddCommand(string command, Action<JsonElement> handler)
+    public static void AddCommand(string command, Action<JsonElement> handler)
     {
-        this.CommandHandlers[command] = handler;
+        Instance.CommandHandlers[command] = handler;
     }
 
     private void ProcessMessage(string command, JsonElement payload)

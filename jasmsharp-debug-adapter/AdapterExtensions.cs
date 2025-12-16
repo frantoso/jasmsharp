@@ -9,8 +9,6 @@ internal static class AdapterExtensions
 {
     public static JasmCommandForString ToCommand(this string method, string payload) => new(method, payload);
 
-    public static JasmCommand ToCommand(this string method, JsonElement payload) => new(method, payload);
-
     public static string Serialize<T>(this T value) => JsonSerializer.Serialize(value);
 
     public static JasmCommand? Deserialize(this string value) => JsonSerializer.Deserialize<JasmCommand>(value);
