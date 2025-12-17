@@ -1,14 +1,14 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="StateChangedInfo.cs">
-//     Created by Frank Listing at 2025/12/16.
+//     Created by Frank Listing at 2025/12/17.
 // </copyright>
 // -----------------------------------------------------------------------
+
+// ReSharper disable UnusedMember.Global
 
 namespace jasmsharp_debug_adapter.model;
 
 using jasmsharp;
-
-// ReSharper disable UnusedMember.Global
 
 public class StateChangedInfo(Fsm sender, StateChangedEventArgs e)
 {

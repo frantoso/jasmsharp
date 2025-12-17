@@ -1,13 +1,20 @@
-﻿using System.Text;
+﻿// -----------------------------------------------------------------------
+// <copyright file="AdapterExtensions.cs">
+//     Created by Frank Listing at 2025/12/17.
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace jasmsharp_debug_adapter;
 
 using System.IO.Compression;
+using System.Text;
 using System.Text.Json;
+using model;
 
 internal static class AdapterExtensions
 {
-    public static JasmCommandForString ToCommand(this string method, string payload) => new(method, payload);
+    public static string MakeKey(this string fsm, string command) => $"{fsm}::{command}";
+    public static JasmCommand ToCommand(this string fsm, string method, string payload) => new(fsm, method, payload);
 
     public static string Serialize<T>(this T value) => JsonSerializer.Serialize(value);
 
@@ -34,5 +41,4 @@ internal static class AdapterExtensions
 
         return output.ToArray();
     }
-
 }
