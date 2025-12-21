@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="DebugAdapter.cs">
-//     Created by Frank Listing at 2025/12/17.
+//     Created by Frank Listing at 2025/12/21.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -23,14 +23,13 @@ using model;
 /// </remarks>
 public class DebugAdapter
 {
-    private const string GetFsmCommand = "get-fsm";
-    private const string SetFsmCommand = "set-fsm";
-    private const string ReceivedFsmCommand = "received-fsm";
-    private const string UpdateStateCommand = "update-state";
     private const string GetStatesCommand = "get-states";
+    private const string SetFsmCommand = "set-fsm";
+    private const string UpdateStateCommand = "update-state";
+    private const string ReceivedFsmCommand = "received-fsm";
     private static readonly TimeSpan NextSendWaitingTime = TimeSpan.FromSeconds(3);
 
-    private bool fsmInfoReceived;
+    private bool fsmInfoAcknowledged;
 
     /// <summary>
     ///     Initializes a new instance of the DebugAdapter class and registers command handlers for the specified finite
@@ -39,11 +38,9 @@ public class DebugAdapter
     /// <param name="fsm">The finite state machine to be debugged. Cannot be null.</param>
     public DebugAdapter(Fsm fsm)
     {
-        this.Fsm = fsm;
         this.FsmInfo = fsm.Convert();
         this.AllMachines = fsm.AllMachines();
 
-        TcpAdapter.AddCommand(fsm.Name, GetFsmCommand, this.OnGetFsm);
         TcpAdapter.AddCommand(fsm.Name, GetStatesCommand, this.OnGetStates);
         TcpAdapter.AddCommand(fsm.Name, ReceivedFsmCommand, this.OnFsmReceived);
         this.AddStateChangedHandlers(fsm);
@@ -51,32 +48,52 @@ public class DebugAdapter
         _ = Task.Run(this.SendFsmInfo);
     }
 
+    /// <summary>
+    ///     Gets the FSM information.
+    /// </summary>
     private FsmInfo FsmInfo { get; }
 
-    private Fsm Fsm { get; }
-
+    /// <summary>
+    ///     Gets a list of all machines, used to send the currently active states.
+    /// </summary>
     private IList<Fsm> AllMachines { get; }
 
-    private void SendAsync<T>(string method, T data) => TcpAdapter.SendAsync(this.Fsm.Name, method, data.Serialize());
+    /// <summary>
+    ///     Helper to send the data to the server.
+    /// </summary>
+    /// <typeparam name="T">The type of the data to send</typeparam>
+    /// <param name="command">The command.</param>
+    /// <param name="data">The data.</param>
+    private void SendAsync<T>(string command, T data) =>
+        TcpAdapter.SendAsync(this.FsmInfo.Name, command, data.Serialize());
 
-    private void OnFsmReceived(string obj)
+    /// <summary>
+    ///     Handles the acknowledgement of the server. Stops periodically sending the FSM info.
+    /// </summary>
+    /// <param name="ignored">The command data (ignored).</param>
+    private void OnFsmReceived(string ignored)
     {
-        this.fsmInfoReceived = true;
+        this.fsmInfoAcknowledged = true;
     }
 
+    /// <summary>
+    ///     Sends the FSM information until the server sent an acknowledgement.
+    /// </summary>
     private void SendFsmInfo()
     {
-        while (!this.fsmInfoReceived)
+        while (!this.fsmInfoAcknowledged)
         {
             this.SendAsync(SetFsmCommand, this.FsmInfo);
             Thread.Sleep(NextSendWaitingTime);
         }
     }
 
-    private void OnGetStates(string obj) => this.AllMachines.ForEach(fsm =>
+    /// <summary>
+    ///     Sends the info about the current active of all state machines.
+    /// </summary>
+    /// <param name="ignored">The command data (ignored).</param>
+    private void OnGetStates(string ignored) => this.AllMachines.ForEach(fsm =>
         this.OnStateChanged(fsm, new StateChangedEventArgs(fsm.Initial.State, fsm.CurrentState)));
-
-    private void OnGetFsm(string obj) => this.SendAsync(SetFsmCommand, this.FsmInfo);
 
     /// <summary>
     ///     Attaches event handlers to the specified finite state machine (FSM) and all of its child states recursively.
@@ -90,9 +107,14 @@ public class DebugAdapter
             .ForEach(children => children.ForEach(this.AddStateChangedHandlers));
     }
 
+    /// <summary>
+    ///     Called when the state of the FSM has changed.
+    /// </summary>
+    /// <param name="sender">The sending state machine.</param>
+    /// <param name="e">The <see cref="StateChangedEventArgs" /> instance containing the event data.</param>
     private void OnStateChanged(object? sender, StateChangedEventArgs e)
     {
-        var stateChangedInfo = new StateChangedInfo(sender as Fsm ?? this.Fsm, e);
+        var stateChangedInfo = new StateChangedInfo((sender as Fsm)?.Name ?? this.FsmInfo.Name, e);
         this.SendAsync(UpdateStateCommand, stateChangedInfo);
     }
 }

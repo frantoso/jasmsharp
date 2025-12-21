@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="StateChangedInfo.cs">
-//     Created by Frank Listing at 2025/12/17.
+//     Created by Frank Listing at 2025/12/21.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -10,9 +10,15 @@ namespace jasmsharp_debug_adapter.model;
 
 using jasmsharp;
 
-public class StateChangedInfo(Fsm sender, StateChangedEventArgs e)
+/// <summary>
+///     A class representing information about a state change event in a finite state machine (FSM).
+/// </summary>
+public class StateChangedInfo(string sender, StateChangedEventArgs e)
 {
-    public string Fsm { get; } = sender.Name;
+    /// <summary>
+    ///     Gets the name of the sending state machine.
+    /// </summary>
+    public string Fsm { get; } = sender;
 
     /// <summary>
     ///     Gets the name of the state before the state change.

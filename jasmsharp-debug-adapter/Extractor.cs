@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="Extractor.cs">
-//     Created by Frank Listing at 2025/12/15.
+//     Created by Frank Listing at 2025/12/21.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -18,16 +18,22 @@ public static class Extractor
 {
     public const string FinalStateId = "Final.ID";
 
-    public static string NormalizedId(this IState state, Fsm owner) =>
-        state is FinalState ? $"{owner.Name}-{FinalStateId}" : state.Id;
+    /// <summary>
+    ///     Normalizes the ID for a final state, for normal states takes the original one.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    /// <param name="ownerName">Name of the owner.</param>
+    /// <returns>Returns the ID.</returns>
+    public static string NormalizedId(this IState state, string ownerName) =>
+        state is FinalState ? $"{ownerName}-{FinalStateId}" : state.Id;
 
     /// <summary>
     ///     Converts a <see cref="ITransition" /> to a <see cref="TransitionInfo" />.
     /// </summary>
     /// <returns>Returns the converted object.</returns>
-    public static TransitionInfo Convert(this ITransition transition, Fsm owner) =>
+    public static TransitionInfo Convert(this ITransition transition, string ownerName) =>
         new(
-            transition.EndPoint.State.NormalizedId(owner),
+            transition.EndPoint.State.NormalizedId(ownerName),
             transition.EndPoint.History.IsHistory,
             transition.EndPoint.History.IsDeepHistory,
             transition.IsToFinal);
@@ -36,12 +42,12 @@ public static class Extractor
     ///     Converts a <see cref="IStateContainer{StateBase}" /> to a <see cref="StateInfo" />.
     /// </summary>
     /// <returns>Returns the converted object.</returns>
-    public static StateInfo Convert(this IStateContainer<StateBase> container, Fsm owner)
+    public static StateInfo Convert(this IStateContainer<StateBase> container, string ownerName)
     {
-        var transitions = container.Transitions.Select(t => t.Convert(owner)).ToList();
+        var transitions = container.Transitions.Select(t => t.Convert(ownerName)).ToList();
         var children = container.Children.Select(fsm => fsm.Convert()).ToList();
         return new StateInfo(
-            container.State.NormalizedId(owner),
+            container.State.NormalizedId(ownerName),
             container.State.Name,
             container.State is InitialState,
             container.State is FinalState,
@@ -67,7 +73,7 @@ public static class Extractor
                     combined.Item1 || info.IsHistory,
                     combined.Item2 || info.IsDeepHistory));
 
-        return new StateInfo(state, hasHistory, hasDeepHistory);
+        return state.Update(hasHistory, hasDeepHistory);
     }
 
     /// <summary>
@@ -77,7 +83,7 @@ public static class Extractor
     public static FsmInfo Convert(this Fsm fsm)
     {
         var rawStates = fsm.Initial.MakeList<IStateContainer<StateBase>>().Concat(fsm.States)
-            .Select(co => co.Convert(fsm)).ToList();
+            .Select(co => co.Convert(fsm.Name)).ToList();
         var transitions = rawStates.SelectMany(it => it.Transitions).ToList();
         var states = rawStates.Select(st => st.Update(transitions)).ToList();
 
@@ -90,6 +96,8 @@ public static class Extractor
     /// <returns>Returns the converted object.</returns>
     public static List<Fsm> AllMachines(this Fsm fsm)
     {
-        return fsm.States.Aggregate(fsm.MakeList(), (list, s) => list.Concat(s.Children.SelectMany(c => c.AllMachines())).ToList());
+        return fsm.States.Aggregate(
+            fsm.MakeList(),
+            (list, s) => list.Concat(s.Children.SelectMany(c => c.AllMachines())).ToList());
     }
 }

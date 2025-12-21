@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="JasmCommand.cs">
-//     Created by Frank Listing at 2025/12/17.
+//     Created by Frank Listing at 2025/12/21.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -14,7 +14,18 @@ using System.Diagnostics.CodeAnalysis;
 [SuppressMessage("ReSharper", "UnusedMember.Global")]
 public class JasmCommand(string fsm, string command, string payload)
 {
+    /// <summary>
+    ///     Gets the name of the state machine related to this command.
+    /// </summary>
     public string Fsm { get; set; } = fsm;
+
+    /// <summary>
+    ///     Gets or sets the command.
+    /// </summary>
     public string Command { get; set; } = command;
+
+    /// <summary>
+    ///     Gets or sets the payload.
+    /// </summary>
     public string Payload { get; set; } = payload;
 }

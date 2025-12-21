@@ -1,12 +1,13 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="TcpAdapter.cs">
-//     Created by Frank Listing at 2025/12/17.
+//     Created by Frank Listing at 2025/12/20.
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace jasmsharp_debug_adapter;
 
 using System.Net.Sockets;
+using Microsoft.Extensions.Configuration;
 using static jasmsharp.Extensions;
 
 /// <summary>
@@ -28,7 +29,7 @@ public class TcpAdapter : IDisposable
     /// </summary>
     private TcpAdapter()
     {
-        _ = Task.Run(() => this.Connect("127.0.0.1", 4000));
+        _ = Task.Run(() => this.Connect(TcpSettings.Read()));
     }
 
     /// <summary>
@@ -91,15 +92,14 @@ public class TcpAdapter : IDisposable
     ///     Connects to the server and starts the receiver loop.
     ///     If the connection fails, it will retry every 3 seconds until successful.
     /// </summary>
-    /// <param name="host">The host to connect to.</param>
-    /// <param name="port">The port to use.</param>
-    private async Task Connect(string host, int port)
+    /// <param name="tcpSettings">The host and port to connect to.</param>
+    private async Task Connect(TcpSettings tcpSettings)
     {
         while (!this.isDisposed)
         {
             try
             {
-                await this.client.ConnectAsync(host, port);
+                await this.client.ConnectAsync(tcpSettings.Host, tcpSettings.Port);
                 _ = Task.Run(this.ReceiveLoop);
                 break;
             }
@@ -144,7 +144,7 @@ public class TcpAdapter : IDisposable
                 break;
             }
 
-            var message = buffer.ToUtf8(bytesRead);
+            var message = buffer.ToString(bytesRead);
             Console.WriteLine($"Received: {message}");
 
             message.Deserialize()?.Run(obj => this.ProcessMessage(obj.Fsm, obj.Command, obj.Payload));
@@ -175,4 +175,93 @@ public class TcpAdapter : IDisposable
     {
         this.Dispose(false);
     }
+}
+
+/// <summary>
+///     Represents configuration settings for establishing a TCP connection, including the host and port.
+/// </summary>
+/// <remarks>
+///     The TcpSettings class provides methods to load connection settings from configuration files and
+///     environment variables. If no explicit values are provided, default values are used for the host and port. This
+///     class
+///     is typically used to centralize and manage TCP connection parameters in applications that require configurable
+///     network endpoints.
+/// </remarks>
+public class TcpSettings
+{
+    /// <summary>
+    ///     The default host address (localhost).
+    /// </summary>
+    public const string DefaultHost = "127.0.0.1";
+
+    /// <summary>
+    ///     Represents the default port number used for network connections.
+    /// </summary>
+    public const int DefaultPort = 4000;
+
+    private string? host;
+    private int? port;
+
+    /// <summary>
+    ///     Gets or sets the host name or IP address used to establish a connection.
+    /// </summary>
+    public string Host { get => this.host ?? DefaultHost; set => this.host = value; }
+
+    /// <summary>
+    ///     Gets or sets the network port number used for the connection.
+    /// </summary>
+    public int Port { get => this.port ?? DefaultPort; set => this.port = value; }
+
+    /// <summary>
+    ///     Reads settings from a configuration file and/or environment variables.
+    /// </summary>
+    /// <returns>Returns a new <see cref="TcpSettings" /> instance, filled with the information read.</returns>
+    /// <remarks>
+    ///     The Host and/or Port properties may return the default values if there was no configuration, or it was not
+    ///     complete.
+    /// </remarks>
+    public static TcpSettings Read() => FromConfiguration().FromEnvironment();
+
+    /// <summary>
+    ///     Reads settings from a configuration file.
+    /// </summary>
+    /// <returns>Returns a new <see cref="TcpSettings" /> instance, filled with the information read.</returns>
+    /// <remarks>
+    ///     The Host and/or Port properties may return the default values if there was no configuration, or it was not
+    ///     complete.
+    /// </remarks>
+    public static TcpSettings FromConfiguration()
+    {
+        var config = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("debug-settings.json", optional: true)
+            .Build()
+            .GetSection("JasmDebug:TcpSettings");
+
+        var tcpSettings = new TcpSettings
+        {
+            host = config.GetValue<string?>("Host")?.Trim(' ', '"', '\t'),
+            port = config.GetValue<int?>("Port")
+        };
+
+        return tcpSettings;
+    }
+
+    /// <summary>
+    ///     Reads settings from environment variables, if they are not already set.
+    /// </summary>
+    /// <returns>Returns a reference to this to allow chaining.</returns>
+    public TcpSettings FromEnvironment()
+    {
+        this.host ??= Environment.GetEnvironmentVariable("JASM_DEBUG_HOST")?.Trim(' ', '"', '\t');
+        this.port ??= Environment.GetEnvironmentVariable("JASM_DEBUG_PORT")?.ToInt32(DefaultPort);
+
+        return this;
+    }
+
+    /// <summary>
+    ///     Returns a string that represents the current object.
+    /// </summary>
+    /// <returns>A string that represents the current object.</returns>
+    public override string ToString() => $"Host: {this.Host}, Port: {this.Port}";
 }
