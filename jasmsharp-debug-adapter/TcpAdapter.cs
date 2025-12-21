@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright file="TcpAdapter.cs">
-//     Created by Frank Listing at 2025/12/20.
+//     Created by Frank Listing at 2025/12/21.
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -18,10 +18,24 @@ public class TcpAdapter : IDisposable
 {
     private static readonly TimeSpan NextConnectWaitingTime = TimeSpan.FromSeconds(3);
 
+    /// <summary>
+    ///     The lazy-initialized singleton instance of the <see cref="TcpAdapter" />.
+    /// </summary>
     private static readonly Lazy<TcpAdapter> LazyInstance = new(() => new TcpAdapter());
 
+    /// <summary>
+    ///     The TCP client used for communication.
+    /// </summary>
     private readonly TcpClient client = new();
 
+    /// <summary>
+    ///     The command handlers.
+    /// </summary>
+    private readonly Dictionary<string, Action<string>> commandHandlers = new();
+
+    /// <summary>
+    ///     A flag indicating whether the instance has been disposed.
+    /// </summary>
     private bool isDisposed;
 
     /// <summary>
@@ -35,9 +49,12 @@ public class TcpAdapter : IDisposable
     /// <summary>
     ///     Gets the one and only instance of the <see cref="TcpAdapter" />.
     /// </summary>
-    public static TcpAdapter Instance => LazyInstance.Value;
+    public static TcpAdapter Instance => TcpAdapter.LazyInstance.Value;
 
-    private Dictionary<string, Action<string>> CommandHandlers { get; } = new();
+    /// <summary>
+    ///     Gets the command handlers.
+    /// </summary>
+    internal IReadOnlyDictionary<string, Action<string>> CommandHandlers => this.commandHandlers;
 
     /// <summary>
     ///     Sends the provided command and data to the server.
@@ -46,7 +63,7 @@ public class TcpAdapter : IDisposable
     /// <param name="command">The command to send.</param>
     /// <param name="data">The data associated with the command.</param>
     public static Task SendAsync(string fsm, string command, string data) =>
-        Instance.SendAsync(fsm.ToCommand(command, data).Serialize());
+        TcpAdapter.Instance.SendAsync(fsm.ToCommand(command, data).Serialize());
 
     /// <summary>
     ///     Adds the provided command to the list of handlers.
@@ -55,7 +72,7 @@ public class TcpAdapter : IDisposable
     /// <param name="command">The command.</param>
     /// <param name="handler">The handler.</param>
     public static void AddCommand(string fsm, string command, Action<string> handler) =>
-        Instance.CommandHandlers.Add(fsm.MakeKey(command), handler);
+        TcpAdapter.Instance.commandHandlers.Add(fsm.MakeKey(command), handler);
 
     /// <summary>
     ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -106,7 +123,7 @@ public class TcpAdapter : IDisposable
             catch
             {
                 // ignored, server may be not ready yet
-                Thread.Sleep(NextConnectWaitingTime);
+                Thread.Sleep(TcpAdapter.NextConnectWaitingTime);
             }
         }
     }
@@ -205,12 +222,12 @@ public class TcpSettings
     /// <summary>
     ///     Gets or sets the host name or IP address used to establish a connection.
     /// </summary>
-    public string Host { get => this.host ?? DefaultHost; set => this.host = value; }
+    public string Host { get => this.host ?? TcpSettings.DefaultHost; set => this.host = value; }
 
     /// <summary>
     ///     Gets or sets the network port number used for the connection.
     /// </summary>
-    public int Port { get => this.port ?? DefaultPort; set => this.port = value; }
+    public int Port { get => this.port ?? TcpSettings.DefaultPort; set => this.port = value; }
 
     /// <summary>
     ///     Reads settings from a configuration file and/or environment variables.
@@ -220,7 +237,7 @@ public class TcpSettings
     ///     The Host and/or Port properties may return the default values if there was no configuration, or it was not
     ///     complete.
     /// </remarks>
-    public static TcpSettings Read() => FromConfiguration().FromEnvironment();
+    public static TcpSettings Read() => TcpSettings.FromConfiguration().FromEnvironment();
 
     /// <summary>
     ///     Reads settings from a configuration file.
@@ -254,7 +271,7 @@ public class TcpSettings
     public TcpSettings FromEnvironment()
     {
         this.host ??= Environment.GetEnvironmentVariable("JASM_DEBUG_HOST")?.Trim(' ', '"', '\t');
-        this.port ??= Environment.GetEnvironmentVariable("JASM_DEBUG_PORT")?.ToInt32(DefaultPort);
+        this.port ??= Environment.GetEnvironmentVariable("JASM_DEBUG_PORT")?.ToInt32(TcpSettings.DefaultPort);
 
         return this;
     }
