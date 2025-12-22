@@ -6,6 +6,8 @@
 
 namespace jasmsharp;
 
+using System.Threading;
+
 /// <summary>
 ///     A class managing the states of an asynchronous FSM (finite state machine).
 /// </summary>
@@ -29,7 +31,11 @@ public class FsmAsync(
     /// <summary>
     ///     Used to synchronize access to the lastTask field.
     /// </summary>
+#if NET8_0
+    private readonly object syncObject = new();
+#else
     private readonly Lock syncObject = new();
+#endif
 
     /// <summary>
     ///     Stores the last task created in the Trigger method.
@@ -44,7 +50,7 @@ public class FsmAsync(
     /// <param name="otherStates">The other states of the FSM.</param>
     /// <returns>A new instance of FsmSync.</returns>
     public static FsmAsync Of(string name, EndStateContainer startState, params EndStateContainer[] otherStates)
-        => new(name, startState, [..otherStates]);
+        => new(name, startState, [.. otherStates]);
 
     /// <summary>
     ///     Queues a trigger of a transition.
