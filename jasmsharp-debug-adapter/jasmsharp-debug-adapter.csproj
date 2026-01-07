@@ -1,10 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
     <RootNamespace>jasmsharp_debug_adapter</RootNamespace>
+    <Title>Just Another State Machine for .NET</Title>
+    <Description>Debug adapter for Jasmsharp</Description>
+    <Authors>frantoso</Authors>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Copyright>Copyright © frantoso 2025-$([System.DateTime]::Now.ToString(yyyy))</Copyright>
+    <PackageProjectUrl>https://github.com/frantoso/jasmsharp</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/frantoso/jasmsharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>state-machine;fsm</PackageTags>
+    <Copyright>Copyright © frantoso 2025-$([System.DateTime]::Now.ToString(yyyy))</Copyright>
+    <PackageProjectUrl>https://github.com/frantoso/jasmsharp</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/frantoso/jasmsharp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>state-machine;fsm</PackageTags>
+    <PackageIcon>jasm.png</PackageIcon>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +32,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\jasmsharp\jasmsharp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="asset\jasm.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="asset\jasm.png">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </Resource>
   </ItemGroup>
 
 </Project>

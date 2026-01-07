@@ -38,16 +38,6 @@ public class AdapterExtensionsTest
     }
 
     [TestMethod]
-    public void ToCommandTest()
-    {
-        var command = "MyFsm".ToCommand("do-it", "payload-data");
-
-        Assert.AreEqual("MyFsm", command.Fsm);
-        Assert.AreEqual("do-it", command.Command);
-        Assert.AreEqual("payload-data", command.Payload);
-    }
-
-    [TestMethod]
     public void SerializeDeserializeTest()
     {
         var originalCommand = new JasmCommand("MyFsm", "do-it", "payload-data");

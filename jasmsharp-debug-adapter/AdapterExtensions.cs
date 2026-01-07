@@ -22,15 +22,6 @@ internal static class AdapterExtensions
     public static string MakeKey(this string fsm, string command) => $"{fsm}::{command}";
 
     /// <summary>
-    ///     Builds a JasmCommand from the given parameters.
-    /// </summary>
-    /// <param name="fsm">The FSM associated with the command.</param>
-    /// <param name="method">The method.</param>
-    /// <param name="payload">The payload.</param>
-    /// <returns>Returns the generated <see cref="JasmCommand" /> object.</returns>
-    public static JasmCommand ToCommand(this string fsm, string method, string payload) => new(fsm, method, payload);
-
-    /// <summary>
     ///     Serializes the specified value to Json.
     /// </summary>
     /// <typeparam name="T">The type of the object to serialize.</typeparam>
@@ -43,6 +34,7 @@ internal static class AdapterExtensions
     /// </summary>
     /// <param name="json">The Json string to deserialize.</param>
     /// <returns>Returns the <see cref="JasmCommand" /> object or null in case of an error.</returns>
+    // ReSharper disable once ConvertToExtensionBlock
     public static JasmCommand? Deserialize(this string json) => JsonSerializer.Deserialize<JasmCommand>(json);
 
     /// <summary>
