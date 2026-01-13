@@ -29,6 +29,12 @@ public class DebugAdapter
     private const string ReceivedFsmCommand = "received-fsm";
     private static readonly TimeSpan NextSendWaitingTime = TimeSpan.FromSeconds(3);
 
+    /// <summary>
+    ///     Static collection of all registered debug adapters. Currently only used to prevent garbage collection.
+    /// </summary>
+    // ReSharper disable once CollectionNeverQueried.Local
+    private static readonly Dictionary<string, DebugAdapter> Adapters = new();
+
     private bool fsmInfoAcknowledged;
 
     /// <summary>
@@ -36,13 +42,13 @@ public class DebugAdapter
     ///     state machine (FSM).
     /// </summary>
     /// <param name="fsm">The finite state machine to be debugged. Cannot be null.</param>
-    public DebugAdapter(Fsm fsm)
+    private DebugAdapter(Fsm fsm)
     {
         this.FsmInfo = fsm.Convert();
         this.AllMachines = fsm.AllMachines();
 
-        TcpAdapter.AddCommand(fsm.Name, GetStatesCommand, this.OnGetStates);
-        TcpAdapter.AddCommand(fsm.Name, ReceivedFsmCommand, this.OnFsmReceived);
+        TcpAdapter.AddCommand(fsm.Name, DebugAdapter.GetStatesCommand, this.OnGetStates);
+        TcpAdapter.AddCommand(fsm.Name, DebugAdapter.ReceivedFsmCommand, this.OnFsmReceived);
         this.AddStateChangedHandlers(fsm);
 
         _ = Task.Run(this.SendFsmInfo);
@@ -57,6 +63,18 @@ public class DebugAdapter
     ///     Gets a list of all machines, used to send the currently active states.
     /// </summary>
     private IList<Fsm> AllMachines { get; }
+
+    /// <summary>
+    ///     Registers the specified finite state machine (FSM) at the DebugAdapter.
+    /// </summary>
+    /// <param name="fsm">The finite state machine to be debugged. Cannot be null.</param>
+    /// <returns>Returns the specified fsm to support chaining.</returns>
+    public static Fsm Of(Fsm fsm)
+    {
+        var adapter = new DebugAdapter(fsm);
+        DebugAdapter.Adapters[fsm.Name] = adapter;
+        return fsm;
+    }
 
     /// <summary>
     ///     Helper to send the data to the server.
@@ -83,8 +101,8 @@ public class DebugAdapter
     {
         while (!this.fsmInfoAcknowledged)
         {
-            this.SendAsync(SetFsmCommand, this.FsmInfo);
-            Thread.Sleep(NextSendWaitingTime);
+            this.SendAsync(DebugAdapter.SetFsmCommand, this.FsmInfo);
+            Thread.Sleep(DebugAdapter.NextSendWaitingTime);
         }
     }
 
@@ -115,6 +133,6 @@ public class DebugAdapter
     private void OnStateChanged(object? sender, StateChangedEventArgs e)
     {
         var stateChangedInfo = new StateChangedInfo((sender as Fsm)?.Name ?? this.FsmInfo.Name, e);
-        this.SendAsync(UpdateStateCommand, stateChangedInfo);
+        this.SendAsync(DebugAdapter.UpdateStateCommand, stateChangedInfo);
     }
 }

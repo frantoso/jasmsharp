@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jasmsharp-debug-adapter", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jasmsharp-debug-adapter.Tests", "jasmsharp-debug-adapter.Tests\jasmsharp-debug-adapter.Tests.csproj", "{E384ADA1-1176-C500-BBF9-C6719B9BA866}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HowToUseTheDebugAdapter", "HowToUseTheDebugAdapter\HowToUseTheDebugAdapter.csproj", "{F46520AB-FF84-4272-8C00-0CA6490720D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{E384ADA1-1176-C500-BBF9-C6719B9BA866}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E384ADA1-1176-C500-BBF9-C6719B9BA866}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E384ADA1-1176-C500-BBF9-C6719B9BA866}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F46520AB-FF84-4272-8C00-0CA6490720D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F46520AB-FF84-4272-8C00-0CA6490720D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F46520AB-FF84-4272-8C00-0CA6490720D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F46520AB-FF84-4272-8C00-0CA6490720D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

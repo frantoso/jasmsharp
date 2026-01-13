@@ -163,7 +163,7 @@ public class TcpAdapter : IDisposable
             }
 
             var message = buffer.ToString(bytesRead);
-            Console.WriteLine($"Received: {message}");
+            //Console.WriteLine($"Received: {message}");
 
             message.Deserialize()?.Run(obj => this.ProcessMessage(obj.Fsm, obj.Command, obj.Payload));
         }
@@ -182,7 +182,7 @@ public class TcpAdapter : IDisposable
             return;
         }
 
-        Console.WriteLine($"Found Handler: {command}");
+        //Console.WriteLine($"Found Handler: {command}");
         handler(payload);
     }
 
