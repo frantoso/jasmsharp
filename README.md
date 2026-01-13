@@ -12,6 +12,8 @@ the functional code. An existing state machine component is parametrized to defi
 This readme includes the documentation of an implementation of a ready to use FSM (Finite State Machine).
 Using this state machine is very simple. Just define the states, the transitions and the state actions.
 
+There is also a visualisation avialable to see the actual state in real-time (see [debug-adapter](./jasmsharp-debug-adapter/README.md)).
+
 ## Basic steps to create a State Machine
 
 1. Model your state machine inside a graphical editor e.g. UML tool or any other applicable graphic tool.

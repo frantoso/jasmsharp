@@ -103,7 +103,7 @@ public abstract class Fsm
     /// <summary>
     ///     Gets the initial state.
     /// </summary>
-    private InitialStateContainer Initial { get; }
+    public InitialStateContainer Initial { get; }
 
     /// <summary>
     ///     Starts the behavior of the Fsm class. Executes the transition from the start state to the first user-defined state.

@@ -20,14 +20,29 @@ public interface IStateContainer<out TState> where TState : StateBase
     TState State { get; }
 
     /// <summary>
+    ///     Gets the name of the enclosed state.
+    /// </summary>
+    public string Name { get; }
+
+    /// <summary>
     ///     Gets a list of all child state machines.
     /// </summary>
     IReadOnlyList<FsmSync> Children { get; }
 
     /// <summary>
+    ///     Gets a value indicating whether this state has child machines.
+    /// </summary>
+    bool HasChildren { get; }
+
+    /// <summary>
     ///     Gets the handler method for the states do in state action.
     /// </summary>
     IAction OnDoInState { get; }
+
+    /// <summary>
+    ///     Gets a list storing the transition information.
+    /// </summary>
+    IReadOnlyList<ITransition> Transitions { get; }
 
     /// <summary>
     ///     Calls the OnEntry handler of this state and starts all child FSMs if there are some.

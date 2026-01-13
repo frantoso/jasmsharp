@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Reflection;
 
 /// <summary>
-///     Extension functions used inside the state macine classes.
+///     Extension functions used inside the state machine classes.
 /// </summary>
 public static class Extensions
 {
