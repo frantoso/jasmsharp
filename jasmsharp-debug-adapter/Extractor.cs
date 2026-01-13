@@ -16,6 +16,9 @@ using model;
 /// </summary>
 public static class Extractor
 {
+    /// <summary>
+    ///     The special ID used for final states.
+    /// </summary>
     public const string FinalStateId = "Final.ID";
 
     /// <summary>
@@ -25,7 +28,7 @@ public static class Extractor
     /// <param name="ownerName">Name of the owner.</param>
     /// <returns>Returns the ID.</returns>
     public static string NormalizedId(this IState state, string ownerName) =>
-        state is FinalState ? $"{ownerName}-{FinalStateId}" : state.Id;
+        state is FinalState ? $"{ownerName}-{Extractor.FinalStateId}" : state.Id;
 
     /// <summary>
     ///     Converts a <see cref="ITransition" /> to a <see cref="TransitionInfo" />.
